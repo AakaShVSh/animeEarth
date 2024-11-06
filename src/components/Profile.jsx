@@ -49,7 +49,7 @@ const ProfileSidebar = () => {
         <VStack spacing={4} alignItems="flex-start" w="100%">
           <Link
             fontSize="md"
-            href="/Profile/Upload"
+            href="/Upload"
             _hover={{ color: "gray.400" }}
           >
             Upload
@@ -57,7 +57,7 @@ const ProfileSidebar = () => {
           <Link fontSize="md" href="#" _hover={{ color: "gray.400" }}>
             Your shows
           </Link>
-          <Link fontSize="md" href="/Profile/Dashboard" _hover={{ color: "gray.400" }}>
+          <Link fontSize="md" href="/Dashboard" _hover={{ color: "gray.400" }}>
             Dashboard
           </Link>
           <Link fontSize="md" href="#" _hover={{ color: "gray.400" }}>

@@ -19,8 +19,8 @@ const Main = () => {
         <Route path="/NewVideos" element={<VideoGrid />}></Route>
         <Route path="/GamingVideos" element={<VideoGrid />}></Route>
         <Route path="/Profile" element={<ProfileSidebar />}></Route>
-        <Route path="/Profile/Dashboard" element={<Dashboard />}></Route>
-        <Route path="/Profile/Upload" element={<UploadForm />}></Route>
+        <Route path="/Dashboard" element={<Dashboard />}></Route>
+        <Route path="/Upload" element={<UploadForm />}></Route>
         <Route path="/VideoPlayer" element={<VideoPlayerUI />}></Route>
       </Routes>
     </>
