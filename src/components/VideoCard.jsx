@@ -1,36 +1,78 @@
 import React from "react";
 import { Box, Image, Text } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-function VideoCard() {
+const VideoCard = ({
+  audience,
+  description,
+  thumbnailUrl,
+  title,
+  videoUrl,
+}) => {
+  const navigate = useNavigate();
+console.log(videoUrl);
+
+  const playVideo = () => {
+    navigate("/VideoPlayer");
+  };
+
   return (
-    <Link to={"/VideoPlayer"}>
+    <Box
+      onClick={playVideo}
+      maxW="sm"
+      h={"100%"}
+      _hover={{
+        transform: "scale(1.1)",
+        transition: "0.5s ease-in-out",
+      }}
+      borderRadius="lg"
+      cursor="pointer"
+      overflow="hidden"
+      bg="blue.900"
+      color="white"
+      position="relative"
+    >
+      {/* Thumbnail as default */}
+      <Image
+        src={thumbnailUrl}
+        alt="Gaming Thumbnail"
+        objectFit="cover"
+        width="100%"
+        // height=""
+        display="block"
+      />
+
+      {/* Video preview on hover */}
       <Box
-        maxW="sm"
-        h={"100%"}
-        _hover={{
-          transform: "scale(1.1)",
-          transition: "0.5s ease-in-out",
-        }}
-        borderRadius="lg"
-        cursor="pointer"
-        overflow="hidden"
-        bg="blue.900"
-        color="white"
+        position="absolute"
+        top="0"
+        left="0"
+        width="100%"
+        height="100%"
+        bg="blackAlpha.800"
+        display="block"
+        _hover={{ display: "none" }}
       >
-        <Image
-          src="https://via.placeholder.com/300x200"
-          alt="Gaming Thumbnail"
-          objectFit="cover"
+        <video
+          src={videoUrl}
+          autoPlay
+          loop
+          muted
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
         />
-        <Box p="4" bg="gray.700">
-          <Text fontWeight="bold" textAlign="center">
-            awesome gaming video
-          </Text>
-        </Box>
       </Box>
-    </Link>
+
+      <Box p="4" bg="gray.700">
+        <Text fontWeight="bold" textAlign="center">
+          {title}
+        </Text>
+      </Box>
+    </Box>
   );
-}
+};
 
 export default VideoCard;

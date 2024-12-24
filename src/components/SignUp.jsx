@@ -36,7 +36,7 @@ const SignUp = () => {
           </Heading>
 
           <FormControl id="name" isRequired>
-            <FormLabel>Name</FormLabel>
+            <FormLabel>Username</FormLabel>
             <Input
               type="text"
               placeholder="Enter your full name"
@@ -85,7 +85,7 @@ const SignUp = () => {
             <Text fontSize="sm">
               Have Account?{" "}
               <Text as={"span"} color="teal.500">
-                Click Here to SignUp
+               <Link to={"/SignIn"}>Click Here to SignIn</Link> 
               </Text>
             </Text>
             <Button w="full" colorScheme="teal" size="lg" type="submit" mt={0}>

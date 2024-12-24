@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Box,
   Button,
@@ -12,8 +12,8 @@ import {
   useColorModeValue,
   Heading,
   Center,
-  VStack
-} from '@chakra-ui/react';
+  VStack,
+} from "@chakra-ui/react";
 
 const SignIn = () => {
   return (
@@ -65,10 +65,16 @@ const SignIn = () => {
             <Checkbox colorScheme="teal">Remember Me</Checkbox>
           </Stack>
           <Box w="100%">
-          <Text fontSize="sm">Have Account? <Text as={"span"} color="teal.500">Click Here to SignUp</Text></Text>
-          <Button w="full" colorScheme="teal" size="lg" type="submit" mt={0}>
-            Sign In
-          </Button></Box>
+            <Text fontSize="sm">
+              Have Account?{" "}
+              <Text as={"span"} color="teal.500">
+                <Link to={"/SignUp"}>Click Here to SignUp</Link>
+              </Text>
+            </Text>
+            <Button w="full" colorScheme="teal" size="lg" type="submit" mt={0}>
+              Sign In
+            </Button>
+          </Box>
         </VStack>
       </Box>
     </Center>

@@ -32,7 +32,7 @@
 
 
 import React from "react";
-import { Flex, Box, Input, Image } from "@chakra-ui/react";
+import { Flex, Box, Input, Image, Button, Spacer } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
 function TopBar() {
@@ -66,6 +66,13 @@ function TopBar() {
           /></Link>
         </Box>
       </Box>
+      <Link to={"/SignIn"}>
+        <Button>Sign In</Button>
+      </Link>
+      
+      <Link to={"/SignUp"}>
+        <Button>Sign Up</Button>
+      </Link>
     </Flex>
   );
 }

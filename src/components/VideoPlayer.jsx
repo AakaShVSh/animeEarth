@@ -10,7 +10,13 @@ import {
   Stack,
   Tag,
 } from "@chakra-ui/react";
-import { FaPlay, FaForward, FaRegCommentAlt,FaRegShareSquare , FaBackward } from "react-icons/fa";
+import {
+  FaPlay,
+  FaForward,
+  FaRegCommentAlt,
+  FaRegShareSquare,
+  FaBackward,
+} from "react-icons/fa";
 import { GrLike, GrDislike } from "react-icons/gr";
 import { LuSave } from "react-icons/lu";
 import { RiDownload2Fill } from "react-icons/ri";

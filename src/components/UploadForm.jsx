@@ -2,42 +2,84 @@ import {
   Box,
   Input,
   Textarea,
-  Grid,
-  Image,
+  Select,
   IconButton,
   Text,
-  Select,
-  SelectField,
   Button,
+  Image,
 } from "@chakra-ui/react";
 import { FiUpload } from "react-icons/fi";
+import { MdOutlineAddPhotoAlternate } from "react-icons/md";
+import { useRef, useState } from "react";
+import { posVideosApi } from "../services/apis/uploadVideo";
 
 function UploadForm() {
+  const videoInputRef = useRef();
+  const thumbnailInputRef = useRef();
+
+  const [formData, setFormData] = useState({
+    videoUrl: null,
+    thumbnailUrl: null,
+    title: "",
+    tags: [],
+    audience: "Above 18",
+    description: "",
+    // thumbnailPreview: null,
+  });
+ 
+const handleVideoSelect = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    setFormData((prevData) => ({
+      ...prevData,
+      videoUrl: file,
+    }));
+    console.log("Selected video:", file);
+  }
+};
+
+const handleThumbnailSelect = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const previewURL = URL.createObjectURL(file);
+    setFormData((prevData) => ({
+      ...prevData,
+      thumbnailUrl: file,
+      thumbnailPreview: previewURL,
+    }));
+  }
+};
+
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+  
+  const uploadData = () => {
+    console.log(formData);
+    
+    posVideosApi(formData)
+  }
   return (
     <>
       <Box
         bg="gray.900"
-        // color="gray"
-        // width={{ base: "40%", md: "22%", lg: "20%" }}
-        // height={{ base: "", md: "88vh", lg: "" }}
         p={3}
-        // display="flex"
-        // flexDirection="column"
-        // alignItems="center"
-
-        // bg=""
         m="2%"
         display={{ base: "", md: "", lg: "flex" }}
         justifyContent="space-around"
       >
         <Box w="100%">
-          {/* Title */}
+          {/* Select Video */}
           <Box mb="2">
             <Text fontWeight="bold" color="whiteAlpha.900">
               Select Video
             </Text>
           </Box>
-          {/* Upload Section */}
           <Box
             w={{ base: "100%", md: "97%", lg: "97%" }}
             bg="gray.300"
@@ -46,24 +88,32 @@ function UploadForm() {
             justifyContent="center"
             borderRadius="4"
             h="200px"
+            position="relative"
           >
             <IconButton
-              aria-label="Upload thumbnail"
+              aria-label="Upload video"
               icon={<FiUpload />}
               size="lg"
-              // w="48px"
               bg="transparent"
               _hover={{ bg: "transparent" }}
-              fontSize="58px" // Adjust this value for larger icon size
+              fontSize="58px"
+              onClick={() => videoInputRef.current.click()}
+            />
+            <Input
+              type="file"
+              accept="video/*"
+              display="none"
+              ref={videoInputRef}
+              onChange={handleVideoSelect}
             />
           </Box>
-          {/* Title */}
+
+          {/* Upload Thumbnail */}
           <Box mb="2" mt="1%">
             <Text fontWeight="bold" color="whiteAlpha.900">
               Video Thumbnail
             </Text>
           </Box>
-          {/* Thumbnail Placeholder */}
           <Box
             w={{ base: "100%", md: "97%", lg: "97%" }}
             bg="gray.300"
@@ -72,8 +122,36 @@ function UploadForm() {
             justifyContent="center"
             borderRadius="4"
             h="200px"
+            position="relative"
+            overflow="hidden"
+            cursor="pointer"
+            onClick={() => thumbnailInputRef.current.click()}
           >
-            Thumbnail
+            {formData.thumbnailPreview ? (
+              <Image
+                src={formData.thumbnailPreview}
+                alt="Thumbnail Preview"
+                objectFit="cover"
+                w="100%"
+                h="100%"
+              />
+            ) : (
+              <IconButton
+                aria-label="Upload thumbnail"
+                icon={<MdOutlineAddPhotoAlternate />}
+                size="lg"
+                bg="transparent"
+                _hover={{ bg: "transparent" }}
+                fontSize="58px"
+              />
+            )}
+            <Input
+              type="file"
+              accept="image/*"
+              display="none"
+              ref={thumbnailInputRef}
+              onChange={handleThumbnailSelect}
+            />
           </Box>
         </Box>
         <Box w="100%">
@@ -84,7 +162,14 @@ function UploadForm() {
             </Text>
           </Box>
           <Box mb={2}>
-            <Input placeholder="Title" bg="gray.300" required />
+            <Input
+              name="title"
+              placeholder="Title"
+              bg="gray.300"
+              value={formData.title}
+              onChange={handleChange}
+              required
+            />
           </Box>
 
           {/* Tags */}
@@ -94,8 +179,15 @@ function UploadForm() {
             </Text>
           </Box>
           <Box mb={2}>
-            <Input placeholder="Tags" bg="gray.300" />
+            <Input
+              name="tags"
+              placeholder="Tags"
+              bg="gray.300"
+              value={formData.tags}
+              onChange={handleChange}
+            />
           </Box>
+
           {/* Audience */}
           <Box mb="2">
             <Text fontWeight="bold" color="whiteAlpha.900">
@@ -104,11 +196,12 @@ function UploadForm() {
           </Box>
           <Box mb={2}>
             <Select
-              defaultValue="Above 18"
+              name="audience"
+              value={formData.audience}
+              onChange={handleChange}
               bg="gray.300"
               borderRadius="4"
               fontWeight="bold"
-              // _focus={{boxShadow: "0 0 0 1px orange" }}
             >
               <option
                 value="Above 18"
@@ -132,12 +225,21 @@ function UploadForm() {
             </Text>
           </Box>
           <Box mb="17%">
-            <Textarea placeholder="Description" bg="gray.300" h="200px" />
+            <Textarea
+              name="description"
+              placeholder="Description"
+              bg="gray.300"
+              h="200px"
+              value={formData.description}
+              onChange={handleChange}
+            />
           </Box>
         </Box>
-      </Box>{" "}
+      </Box>
       <Box m="2%" w="100%">
-        <Button w="96%" bg="#21b8fd">Upload Video</Button>
+        <Button w="96%" bg="#21b8fd" onClick={() => uploadData()}>
+          Upload Video
+        </Button>
       </Box>
     </>
   );
