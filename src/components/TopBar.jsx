@@ -67,11 +67,11 @@ function TopBar() {
         </Box>
       </Box>
       <Link to={"/SignIn"}>
-        <Button>Sign In</Button>
+        <Button marginLeft="3">Sign In</Button>
       </Link>
       
       <Link to={"/SignUp"}>
-        <Button>Sign Up</Button>
+        <Button marginLeft="3">Sign Up</Button>
       </Link>
     </Flex>
   );

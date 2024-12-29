@@ -13,7 +13,7 @@ const VideoCard = ({
 console.log(videoUrl);
 
   const playVideo = () => {
-    navigate("/VideoPlayer");
+     navigate("/VideoPlayer", { state: { videoUrl } });
   };
 
   return (
@@ -50,8 +50,8 @@ console.log(videoUrl);
         width="100%"
         height="100%"
         bg="blackAlpha.800"
-        display="block"
-        _hover={{ display: "none" }}
+        display="none"
+        _hover={{ display: "block" }}
       >
         <video
           src={videoUrl}

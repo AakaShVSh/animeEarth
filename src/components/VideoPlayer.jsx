@@ -1,44 +1,16 @@
-import React from "react";
-import {
-  Box,
-  Button,
-  HStack,
-  VStack,
-  Text,
-  Avatar,
-  IconButton,
-  Stack,
-  Tag,
-} from "@chakra-ui/react";
-import {
-  FaPlay,
-  FaForward,
-  FaRegCommentAlt,
-  FaRegShareSquare,
-  FaBackward,
-} from "react-icons/fa";
+import React, { useRef, useState } from "react";
+import { Box, Button, HStack, VStack, Text, Avatar } from "@chakra-ui/react";
+import { FaRegCommentAlt, FaRegShareSquare } from "react-icons/fa";
 import { GrLike, GrDislike } from "react-icons/gr";
 import { LuSave } from "react-icons/lu";
 import { RiDownload2Fill } from "react-icons/ri";
+import { useLocation } from "react-router-dom";
+import VideoPlayerDisplay from "./VideoPlayerDisplay";
 const VideoPlayerUI = () => {
   return (
     <Box p={5} borderRadius="md">
       {/* Video Player Section */}
-      <Box
-        bg="gray.400"
-        h="500px"
-        mb={4}
-        display="flex"
-        borderRadius="2"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <HStack spacing={8}>
-          <IconButton icon={<FaBackward />} aria-label="Rewind" />
-          <IconButton icon={<FaPlay />} aria-label="Play" />
-          <IconButton icon={<FaForward />} aria-label="Forward" />
-        </HStack>
-      </Box>
+      <VideoPlayerDisplay />
 
       {/* User and Follow Section */}
       <HStack

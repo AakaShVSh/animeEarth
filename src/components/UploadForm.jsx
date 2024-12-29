@@ -21,35 +21,35 @@ function UploadForm() {
     videoUrl: null,
     thumbnailUrl: null,
     title: "",
+    category:"Education",
     tags: [],
     audience: "Above 18",
     description: "",
     // thumbnailPreview: null,
   });
- 
-const handleVideoSelect = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    setFormData((prevData) => ({
-      ...prevData,
-      videoUrl: file,
-    }));
-    console.log("Selected video:", file);
-  }
-};
 
-const handleThumbnailSelect = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const previewURL = URL.createObjectURL(file);
-    setFormData((prevData) => ({
-      ...prevData,
-      thumbnailUrl: file,
-      thumbnailPreview: previewURL,
-    }));
-  }
-};
+  const handleVideoSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setFormData((prevData) => ({
+        ...prevData,
+        videoUrl: file,
+      }));
+      console.log("Selected video:", file);
+    }
+  };
 
+  const handleThumbnailSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const previewURL = URL.createObjectURL(file);
+      setFormData((prevData) => ({
+        ...prevData,
+        thumbnailUrl: file,
+        thumbnailPreview: previewURL,
+      }));
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -58,12 +58,12 @@ const handleThumbnailSelect = (event) => {
       [name]: value,
     }));
   };
-  
+
   const uploadData = () => {
     console.log(formData);
-    
-    posVideosApi(formData)
-  }
+
+    posVideosApi(formData);
+  };
   return (
     <>
       <Box
@@ -87,7 +87,7 @@ const handleThumbnailSelect = (event) => {
             alignItems="center"
             justifyContent="center"
             borderRadius="4"
-            h="200px"
+            h="300px"
             position="relative"
           >
             <IconButton
@@ -121,7 +121,7 @@ const handleThumbnailSelect = (event) => {
             alignItems="center"
             justifyContent="center"
             borderRadius="4"
-            h="200px"
+            h="300px"
             position="relative"
             overflow="hidden"
             cursor="pointer"
@@ -170,6 +170,59 @@ const handleThumbnailSelect = (event) => {
               onChange={handleChange}
               required
             />
+          </Box>
+          {/* Category */}
+          <Box mb="2">
+            <Text fontWeight="bold" color="whiteAlpha.900">
+              Category
+            </Text>
+          </Box>
+          <Box mb={2}>
+            <Select
+              name="category"
+              value={formData.category || ""}
+              onChange={handleChange}
+              bg="gray.300"
+              borderRadius="4"
+              fontWeight="bold"
+            >
+              <option
+                value="Education"
+                style={{ backgroundColor: "#0e1525", color: "white" }}
+              >
+                Education
+              </option>
+              <option
+                value="Entertainment"
+                style={{ backgroundColor: "#0e1525", color: "white" }}
+              >
+                Entertainment
+              </option>
+              <option
+                value="Gaming"
+                style={{ backgroundColor: "#0e1525", color: "white" }}
+              >
+                Gaming
+              </option>
+              <option
+                value="Music"
+                style={{ backgroundColor: "#0e1525", color: "white" }}
+              >
+                Music
+              </option>
+              <option
+                value="Sports"
+                style={{ backgroundColor: "#0e1525", color: "white" }}
+              >
+                Sports
+              </option>
+              <option
+                value="Technology"
+                style={{ backgroundColor: "#0e1525", color: "white" }}
+              >
+                Technology
+              </option>
+            </Select>
           </Box>
 
           {/* Tags */}
