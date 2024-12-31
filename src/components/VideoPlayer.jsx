@@ -1,10 +1,9 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import { Box, Button, HStack, VStack, Text, Avatar } from "@chakra-ui/react";
 import { FaRegCommentAlt, FaRegShareSquare } from "react-icons/fa";
 import { GrLike, GrDislike } from "react-icons/gr";
 import { LuSave } from "react-icons/lu";
 import { RiDownload2Fill } from "react-icons/ri";
-import { useLocation } from "react-router-dom";
 import VideoPlayerDisplay from "./VideoPlayerDisplay";
 const VideoPlayerUI = () => {
   return (

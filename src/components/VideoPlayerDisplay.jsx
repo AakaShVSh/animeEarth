@@ -50,6 +50,20 @@ const VideoPlayerDisplay = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleFullScreenChange = () => {
+      if (!document.fullscreenElement) {
+        setIsFullScreen(false); // Exit full-screen mode
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullScreenChange);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullScreenChange);
+    };
+  }, []);
+
   const handlePlayPause = () => {
     if (videoRef.current) {
       if (isPlaying) {
@@ -129,7 +143,7 @@ const VideoPlayerDisplay = () => {
       w="100%"
       borderRadius="md"
       _hover={{
-        "& .hstack-controls": {
+        "& .controls-container": {
           display: "flex",
         },
       }}
@@ -146,102 +160,102 @@ const VideoPlayerDisplay = () => {
         controls={false}
       />
 
-      {/* Custom Controls */}
-      <HStack
-        spacing={4}
-        className="hstack-controls"
+      {/* Controls Container */}
+      <Box
+        className="controls-container"
         position="absolute"
-        bottom="0px"
-        justifyContent="space-between"
+        bottom="0"
         width="100%"
         display="none"
+        flexDirection="column"
         bg="rgba(0, 0, 0, 0.5)"
         p={4}
-        borderRadius="md"
       >
-        {/* Volume Control */}
-        <HStack spacing={4} alignItems="center">
+        {/* Custom Controls */}
+        <HStack
+          spacing={4}
+          justifyContent="space-between"
+          alignItems="center"
+          mb={2}
+        >
+          {/* Volume Control */}
+          <HStack spacing={4} alignItems="center">
+            <IconButton
+              icon={volume > 0 ? <FaVolumeUp /> : <FaVolumeMute />}
+              aria-label="Volume"
+              colorScheme="whiteAlpha"
+            />
+            <Slider
+              aria-label="Volume"
+              value={volume}
+              onChange={handleVolumeChange}
+              min={0}
+              max={100}
+              step={1}
+              width="100px"
+            >
+              <SliderTrack bg="gray.500">
+                <SliderFilledTrack bg="white" />
+              </SliderTrack>
+              <SliderThumb />
+            </Slider>
+          </HStack>
+
+          {/* Playback Controls */}
+          <HStack spacing={8} justifyContent="center">
+            <IconButton
+              icon={<FaBackward />}
+              aria-label="Rewind"
+              colorScheme="whiteAlpha"
+              onClick={handleSkipBackward}
+            />
+            <IconButton
+              icon={isPlaying ? <FaPause /> : <FaPlay />}
+              aria-label={isPlaying ? "Pause" : "Play"}
+              colorScheme="whiteAlpha"
+              onClick={handlePlayPause}
+            />
+            <IconButton
+              icon={<FaForward />}
+              aria-label="Forward"
+              colorScheme="whiteAlpha"
+              onClick={handleSkipForward}
+            />
+          </HStack>
+
+          {/* Fullscreen Toggle */}
           <IconButton
-            icon={volume > 0 ? <FaVolumeUp /> : <FaVolumeMute />}
-            aria-label="Volume"
+            icon={isFullScreen ? <FaCompress /> : <FaExpand />}
+            aria-label={isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
             colorScheme="whiteAlpha"
+            onClick={handleFullScreenToggle}
           />
+        </HStack>
+
+        {/* Progress Bar */}
+        <HStack spacing={4} alignItems="center" mt={2}>
+          <Text color="white" fontSize="sm">
+            {formatTime(currentTime)}
+          </Text>
           <Slider
-            aria-label="Volume"
-            value={volume}
-            onChange={handleVolumeChange}
+            aria-label="Progress"
+            value={progress}
+            onChange={handleProgressChange}
             min={0}
             max={100}
-            step={1}
-            width="100px"
+            step={0.1}
+            flex="1"
           >
             <SliderTrack bg="gray.500">
-              <SliderFilledTrack bg="white" />
+              <SliderFilledTrack bg="red.500" />
             </SliderTrack>
             <SliderThumb />
           </Slider>
+          <Text color="white" fontSize="sm">
+            {formatTime(duration)}
+          </Text>
         </HStack>
-
-        {/* Playback Controls */}
-        <HStack spacing={8} justifyContent="center">
-          <IconButton
-            icon={<FaBackward />}
-            aria-label="Rewind"
-            colorScheme="whiteAlpha"
-            onClick={handleSkipBackward}
-          />
-          <IconButton
-            icon={isPlaying ? <FaPause /> : <FaPlay />}
-            aria-label={isPlaying ? "Pause" : "Play"}
-            colorScheme="whiteAlpha"
-            onClick={handlePlayPause}
-          />
-          <IconButton
-            icon={<FaForward />}
-            aria-label="Forward"
-            colorScheme="whiteAlpha"
-            onClick={handleSkipForward}
-          />
-        </HStack>
-
-        {/* Fullscreen Toggle */}
-        <IconButton
-          icon={isFullScreen ? <FaCompress /> : <FaExpand />}
-          aria-label={isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
-          colorScheme=""
-          onClick={handleFullScreenToggle}
-        />
-      </HStack>
-
-      {/* Progress Bar */}
-      <HStack
-        position="absolute"
-        bottom="60px"
-        width="97%"
-        spacing={4}
-        alignItems="center"
-      >
-        <Text color="white" fontSize="sm">
-          {formatTime(currentTime)}
-        </Text>
-        <Slider
-          aria-label="Progress"
-          value={progress}
-          onChange={handleProgressChange}
-          min={0}
-          max={100}
-          step={0.1}
-          flex="1"
-        >
-          <SliderTrack bg="gray.500">
-            <SliderFilledTrack bg="red.500" />
-          </SliderTrack>
-          <SliderThumb />
-        </Slider>
-        <Text color="white" fontSize="sm">
-          {formatTime(duration)}
-        </Text>
-      </HStack>
+      </Box>
     </Box>
   );
 };

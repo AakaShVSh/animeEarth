@@ -32,10 +32,13 @@
 
 
 import React from "react";
-import { Flex, Box, Input, Image, Button, Spacer } from "@chakra-ui/react";
+import { Flex, Box, Input, Image, Button} from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
 function TopBar() {
+  const searchVideos = (e) => {
+        
+  }
   return (
     <Flex
       position="sticky"
@@ -50,7 +53,7 @@ function TopBar() {
     >
       {/* Search Input Box */}
       <Box ml="8%" w="70%">
-        <Input type="search" width="100%" bg="white" placeholder="Search..." />
+        <Input onChange={(e) => searchVideos(e)} type="search" width="100%" bg="white" color="GrayText" placeholder="Search..." />
       </Box>
 
       {/* Profile Image */}

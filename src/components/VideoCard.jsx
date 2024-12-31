@@ -42,7 +42,6 @@ console.log(videoUrl);
         display="block"
       />
 
-      {/* Video preview on hover */}
       <Box
         position="absolute"
         top="0"
@@ -50,8 +49,9 @@ console.log(videoUrl);
         width="100%"
         height="100%"
         bg="blackAlpha.800"
-        display="none"
-        _hover={{ display: "block" }}
+        opacity="0"
+        transition="opacity 0.3s"
+        _hover={{ opacity: "1" }}
       >
         <video
           src={videoUrl}

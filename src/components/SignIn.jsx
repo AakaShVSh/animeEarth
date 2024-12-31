@@ -18,7 +18,7 @@ import {
 const SignIn = () => {
   return (
     <Center
-      height={{ base: "92.9vh", md: "91.9vh", lg: "90.6vh" }}
+      height={{ base: "92.9vh", md: "91.9vh", lg: "91.5vh" }}
       bg="gray.900"
     >
       <Box
