@@ -1,11 +1,22 @@
 import axios from "axios";
 
-export const getVideosApi = async (sv) => {
+export const getVideosApi = async (setVideos) => {
   axios
     .get("http://localhost:80/videos")
     .then((r) => {
       console.log(r);
-      sv(r.data);
+      setVideos(r.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+export const getUserVideosApi = async (setVideos) => {
+  axios
+    .get("http://localhost:80/videos")
+    .then((r) => {
+      console.log(r);
+      setVideos(r.data);
     })
     .catch((error) => {
       console.log(error);
@@ -14,10 +25,11 @@ export const getVideosApi = async (sv) => {
 export const posVideosApi = async (data) => {
   try {
     console.log(data);
-    
+
     const response = await axios.post(
       "http://localhost:80/videos/upload",
-      data,{
+      data,
+      {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -27,7 +39,7 @@ export const posVideosApi = async (data) => {
     // return response; // Return the response if needed
   } catch (error) {
     console.log(error);
-  };
+  }
 };
 
 export const updateVideosApi = async (id) => {

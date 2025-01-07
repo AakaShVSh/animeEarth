@@ -7,6 +7,7 @@ import SignIn from './SignIn'
 import SignUp from './SignUp'
 import UploadForm from './UploadForm'
 import VideoPlayerUI from './VideoPlayer'
+import ProtectedRoute from '../services/protectedRoute'
 
 const Main = () => {
   return (
@@ -18,10 +19,10 @@ const Main = () => {
         <Route path="/Trending" element={<VideoGrid />}></Route>
         <Route path="/NewVideos" element={<VideoGrid />}></Route>
         <Route path="/GamingVideos" element={<VideoGrid />}></Route>
-        <Route path="/Profile" element={<ProfileSidebar />}></Route>
-        <Route path="/Dashboard" element={<Dashboard />}></Route>
-        <Route path="/Upload" element={<UploadForm />}></Route>
-        <Route path="/VideoPlayer" element={<VideoPlayerUI />}></Route>
+        <Route path="/Profile" element={<ProtectedRoute><ProfileSidebar /></ProtectedRoute>}></Route>
+        <Route path="/Dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>}></Route>
+        <Route path="/Upload" element={<ProtectedRoute><UploadForm /></ProtectedRoute>}></Route>
+        <Route path="/VideoPlayer" element={<ProtectedRoute><VideoPlayerUI /></ProtectedRoute>}></Route>
       </Routes>
     </>
   );

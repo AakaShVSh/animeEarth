@@ -133,7 +133,7 @@ const VideoPlayerDisplay = () => {
   return (
     <Box
       bg="gray.400"
-      h={isFullScreen ? "100vh" : "800px"}
+      h={isFullScreen ? "700vh" : "620px"}
       mb={4}
       display="flex"
       justifyContent="center"

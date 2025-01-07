@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -9,13 +9,47 @@ import {
   Stack,
   Heading,
   VStack,
-  useColorModeValue,
   Text,
-  Link,
   Center,
 } from "@chakra-ui/react";
+import { userSignupApi } from "../services/apis/userAuth";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignUp = () => {
+  const navigate = useNavigate();
+  const [data, setData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    termsandcondition: false,
+  });
+
+  const handleSignup = (e) => {
+    let { name, value, checked } = e.target;
+    if (name === "termsandcondition") {
+      value = checked;
+    }
+    setData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const userAuthData = () => {
+    if (!data.username || !data.email || !data.termsandcondition) {
+      alert("All fields are required");
+      return;
+    }
+
+    if (!data.email.endsWith("@gmail.com")) {
+      alert("Please enter a valid Gmail address");
+      return;
+    }
+
+    userSignupApi(data);
+    navigate("/SignIn");
+  };
+
   return (
     <Center
       height={{ base: "92.9vh", md: "91.9vh", lg: "90.6vh" }}
@@ -38,6 +72,8 @@ const SignUp = () => {
           <FormControl id="name" isRequired>
             <FormLabel>Username</FormLabel>
             <Input
+              onChange={handleSignup}
+              name="username"
               type="text"
               placeholder="Enter your full name"
               focusBorderColor="teal.500"
@@ -48,6 +84,8 @@ const SignUp = () => {
           <FormControl id="email" isRequired>
             <FormLabel>Email</FormLabel>
             <Input
+              onChange={handleSignup}
+              name="email"
               type="email"
               placeholder="Enter your email"
               focusBorderColor="teal.500"
@@ -58,6 +96,8 @@ const SignUp = () => {
           <FormControl id="password" isRequired>
             <FormLabel>Password</FormLabel>
             <Input
+              onChange={handleSignup}
+              name="password"
               type="password"
               placeholder="Create a password"
               focusBorderColor="teal.500"
@@ -76,7 +116,11 @@ const SignUp = () => {
           </FormControl>
 
           <Stack spacing={5} w="full">
-            <Checkbox colorScheme="teal">
+            <Checkbox
+              onChange={handleSignup}
+              name="termsandcondition"
+              colorScheme="teal"
+            >
               I agree to the Terms and Policies
             </Checkbox>
           </Stack>
@@ -85,10 +129,17 @@ const SignUp = () => {
             <Text fontSize="sm">
               Have Account?{" "}
               <Text as={"span"} color="teal.500">
-               <Link to={"/SignIn"}>Click Here to SignIn</Link> 
+                <Link to="/SignIn">Click Here to SignIn</Link>
               </Text>
             </Text>
-            <Button w="full" colorScheme="teal" size="lg" type="submit" mt={0}>
+            <Button
+              onClick={userAuthData}
+              w="full"
+              colorScheme="teal"
+              size="lg"
+              type="submit"
+              mt={0}
+            >
               Sign In
             </Button>
           </Box>

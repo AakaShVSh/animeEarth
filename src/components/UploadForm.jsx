@@ -12,12 +12,14 @@ import { FiUpload } from "react-icons/fi";
 import { MdOutlineAddPhotoAlternate } from "react-icons/md";
 import { useRef, useState } from "react";
 import { posVideosApi } from "../services/apis/uploadVideo";
+import { getCookies } from "../services/cookies";
 
 function UploadForm() {
   const videoInputRef = useRef();
   const thumbnailInputRef = useRef();
 
   const [formData, setFormData] = useState({
+    user:"",
     videoUrl: null,
     thumbnailUrl: null,
     title: "",
@@ -59,21 +61,32 @@ function UploadForm() {
     }));
   };
 
-  const uploadData = () => {
+  const uploadData = async () => {
     console.log(formData);
+    try {
+      const getUser = getCookies("_user"); 
+      // Construct the payload with updated user data
+      const updatedFormData = { ...formData, user: getUser };
 
-    posVideosApi(formData);
+      // Call the API with the updated form data
+      await posVideosApi(updatedFormData);
+      posVideosApi(formData);
+    } catch (error) {
+      console.error(error);
+      
+    }
+    
   };
   return (
     <>
       <Box
         bg="gray.900"
         p={3}
-        m="2%"
+        m="1%"
         display={{ base: "", md: "", lg: "flex" }}
         justifyContent="space-around"
       >
-        <Box w="100%">
+        <Box w="80%">
           {/* Select Video */}
           <Box mb="2">
             <Text fontWeight="bold" color="whiteAlpha.900">

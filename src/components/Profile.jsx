@@ -1,27 +1,21 @@
-import {
-  Avatar,
-  Box,
-  Text,
-  VStack,
-  Divider,
-  Link,
-  Flex,
-} from "@chakra-ui/react";
+import { Avatar, Box, Text, HStack, Divider, Flex } from "@chakra-ui/react";
 import { useEffect } from "react";
-
+import { Link } from "react-router-dom";
 const ProfileSidebar = () => {
-
-
   useEffect(() => {
-    localStorage.setItem("SideBar",JSON.stringify("ProfileSideBar"))
-  },[])
+    localStorage.setItem("SideBar", JSON.stringify("ProfileSideBar"));
+  }, []);
   return (
-    <Flex height={{ base: "92.9vh", md: "91.9vh", lg: "91.9vh" }} bg="black">
+    <Flex
+      height={{ base: "92.9vh", md: "91.9vh", lg: "91.9vh" }}
+      textAlign="center"
+      bg="#0d0503"
+    >
       {/* Sidebar */}
       <Box
         bg="gray.900"
         color="white"
-        width={{ base: "40%", md: "22%", lg: "20%" }}
+        width={{ base: "40%", md: "22%", lg: "100%" }}
         height="9vh"
         p={3}
         display="flex"
@@ -46,27 +40,38 @@ const ProfileSidebar = () => {
         <Divider mt={4} mb={4} borderColor="whiteAlpha.600" />
 
         {/* Menu */}
-        <VStack spacing={4} alignItems="flex-start" w="100%">
-          <Link
+        <HStack spacing={7} alignItems="flex-start" w="100%">
+          {/* <Link
             fontSize="md"
             href="/Upload"
             _hover={{ color: "gray.400" }}
           >
             Upload
+          </Link> */}
+          <Link to="#">
+            <Text fontSize="md" _hover={{ color: "gray.400" }}>
+              {" "}
+              Your shows
+            </Text>
           </Link>
-          <Link fontSize="md" href="#" _hover={{ color: "gray.400" }}>
-            Your shows
+          <Link to="/Dashboard">
+            <Text fontSize="md" _hover={{ color: "gray.400" }}>
+              Dashboard
+            </Text>
           </Link>
-          <Link fontSize="md" href="/Dashboard" _hover={{ color: "gray.400" }}>
-            Dashboard
+          <Link to="#">
+            <Text fontSize="md" _hover={{ color: "gray.400" }}>
+              Your Profit
+            </Text>
           </Link>
-          <Link fontSize="md" href="#" _hover={{ color: "gray.400" }}>
-            Your Profit
+          <Link to="#">
+            <Text fontSize="md" _hover={{ color: "gray.400" }}>
+              Edit Profile
+            </Text>
           </Link>
-          <Link fontSize="md" href="#" _hover={{ color: "gray.400" }}>
-            Edit Profile
-          </Link>
-        </VStack>
+        </HStack>
+        {/* Divider */}
+        <Divider mt={4} mb={4} borderColor="whiteAlpha.600" />
       </Box>
 
       {/* Main Content Area */}

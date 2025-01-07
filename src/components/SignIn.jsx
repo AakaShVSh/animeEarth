@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -8,14 +8,44 @@ import {
   Input,
   Stack,
   Text,
-  Link,
-  useColorModeValue,
   Heading,
   Center,
   VStack,
 } from "@chakra-ui/react";
+import { Link, useNavigate } from "react-router-dom";
+import { userSigninApi } from "../services/apis/userAuth";
 
 const SignIn = () => {
+  const navigate = useNavigate();
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleSignin = (e) => {
+    let { name, value } = e.target;
+    setData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const userAuthData = () => {
+    if (!data.email || !data.password) {
+      alert("All fields are required");
+      return;
+    }
+
+    if (!data.email.endsWith("@gmail.com")) {
+      alert("Please enter a valid Gmail address");
+      return;
+    }
+
+    userSigninApi(data);
+    navigate("/");
+  };
+  console.log(data);
+
   return (
     <Center
       height={{ base: "92.9vh", md: "91.9vh", lg: "91.5vh" }}
@@ -38,6 +68,8 @@ const SignIn = () => {
           <FormControl id="email" isRequired>
             <FormLabel>Email</FormLabel>
             <Input
+              onChange={handleSignin}
+              name="email"
               type="email"
               placeholder="Enter your email"
               focusBorderColor="teal.500"
@@ -48,6 +80,8 @@ const SignIn = () => {
           <FormControl id="password" isRequired>
             <FormLabel>Password</FormLabel>
             <Input
+              onChange={handleSignin}
+              name="password"
               type="password"
               placeholder="Enter your password"
               focusBorderColor="teal.500"
@@ -71,7 +105,14 @@ const SignIn = () => {
                 <Link to={"/SignUp"}>Click Here to SignUp</Link>
               </Text>
             </Text>
-            <Button w="full" colorScheme="teal" size="lg" type="submit" mt={0}>
+            <Button
+              onClick={userAuthData}
+              w="full"
+              colorScheme="teal"
+              size="lg"
+              type="submit"
+              mt={0}
+            >
               Sign In
             </Button>
           </Box>
