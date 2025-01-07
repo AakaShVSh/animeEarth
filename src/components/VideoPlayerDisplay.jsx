@@ -133,7 +133,10 @@ const VideoPlayerDisplay = () => {
   return (
     <Box
       bg="gray.400"
-      h={isFullScreen ? "700vh" : "620px"}
+      h={{
+        base: isFullScreen ? "100vh" : "230px", // Height for mobile devices
+        md: isFullScreen ? "100vh" : "620px", // Height for medium and larger screens
+      }}
       mb={4}
       display="flex"
       justifyContent="center"
@@ -167,23 +170,38 @@ const VideoPlayerDisplay = () => {
         bottom="0"
         width="100%"
         display="none"
-        flexDirection="column"
-        bg="rgba(0, 0, 0, 0.5)"
+        flexDirection={{
+          base: "column", // Stack controls vertically on mobile
+          md: "row", // Horizontal layout on larger screens
+        }}
+        alignItems="center"
+        bg="rgba(0, 0, 0, 0.7)"
         p={4}
       >
         {/* Custom Controls */}
         <HStack
-          spacing={4}
+          spacing={{
+            base: 2, // Reduced spacing for mobile
+            md: 4, // Default spacing for larger screens
+          }}
           justifyContent="space-between"
           alignItems="center"
-          mb={2}
+          w="100%"
+          mb={{
+            base: 2, // Add bottom margin on mobile
+            md: 0, // No margin for larger screens
+          }}
         >
           {/* Volume Control */}
-          <HStack spacing={4} alignItems="center">
+          <HStack spacing={2} alignItems="center">
             <IconButton
               icon={volume > 0 ? <FaVolumeUp /> : <FaVolumeMute />}
               aria-label="Volume"
               colorScheme="whiteAlpha"
+              size={{
+                // base: "", // Smaller buttons for mobile
+                md: "md", // Default size for larger screens
+              }}
             />
             <Slider
               aria-label="Volume"
@@ -192,33 +210,53 @@ const VideoPlayerDisplay = () => {
               min={0}
               max={100}
               step={1}
-              width="100px"
+              width={{
+                base: "50px", // Shorter slider on mobile
+                md: "100px", // Default slider width for larger screens
+              }}
             >
               <SliderTrack bg="gray.500">
                 <SliderFilledTrack bg="white" />
               </SliderTrack>
-              <SliderThumb />
+              <SliderThumb
+                boxSize={{
+                  base: "10px", // Smaller thumb size for mobile
+                  md: "16px", // Default thumb size for larger screens
+                }}
+              />
             </Slider>
           </HStack>
 
           {/* Playback Controls */}
-          <HStack spacing={8} justifyContent="center">
+          <HStack spacing={4} justifyContent="center">
             <IconButton
               icon={<FaBackward />}
               aria-label="Rewind"
               colorScheme="whiteAlpha"
+              size={{
+                // base: "sm",
+                md: "md",
+              }}
               onClick={handleSkipBackward}
             />
             <IconButton
               icon={isPlaying ? <FaPause /> : <FaPlay />}
               aria-label={isPlaying ? "Pause" : "Play"}
               colorScheme="whiteAlpha"
+              size={{
+                // base: "sm",
+                md: "md",
+              }}
               onClick={handlePlayPause}
             />
             <IconButton
               icon={<FaForward />}
               aria-label="Forward"
               colorScheme="whiteAlpha"
+              size={{
+                // base: "sm",
+                md: "md",
+              }}
               onClick={handleSkipForward}
             />
           </HStack>
@@ -228,13 +266,25 @@ const VideoPlayerDisplay = () => {
             icon={isFullScreen ? <FaCompress /> : <FaExpand />}
             aria-label={isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
             colorScheme="whiteAlpha"
+            size={{
+              // base: "sm",
+              md: "md",
+            }}
             onClick={handleFullScreenToggle}
           />
         </HStack>
 
         {/* Progress Bar */}
-        <HStack spacing={4} alignItems="center" mt={2}>
-          <Text color="white" fontSize="sm">
+        <HStack
+          spacing={2}
+          alignItems="center"
+          mt={{
+            base: 2, // Add top margin for progress bar on mobile
+            md: 0, // No margin for larger screens
+          }}
+          w="100%"
+        >
+          <Text color="white" fontSize="xs">
             {formatTime(currentTime)}
           </Text>
           <Slider
@@ -249,9 +299,14 @@ const VideoPlayerDisplay = () => {
             <SliderTrack bg="gray.500">
               <SliderFilledTrack bg="red.500" />
             </SliderTrack>
-            <SliderThumb />
+            <SliderThumb
+              boxSize={{
+                base: "10px",
+                md: "16px",
+              }}
+            />
           </Slider>
-          <Text color="white" fontSize="sm">
+          <Text color="white" fontSize="xs">
             {formatTime(duration)}
           </Text>
         </HStack>
