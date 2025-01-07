@@ -2,7 +2,10 @@ import axios from "axios";
 
 export const getVideosApi = async (setVideos) => {
   axios
-    .get("http://localhost:80/videos")
+    .get(
+      "https://animetubebackend.onrender.com/videos" ||
+        "http://localhost:80/videos"
+    )
     .then((r) => {
       console.log(r);
       setVideos(r.data);
@@ -13,7 +16,10 @@ export const getVideosApi = async (setVideos) => {
 };
 export const getUserVideosApi = async (setVideos) => {
   axios
-    .get("http://localhost:80/videos")
+    .get(
+      "https://animetubebackend.onrender.com/videos" ||
+        "http://localhost:80/videos"
+    )
     .then((r) => {
       console.log(r);
       setVideos(r.data);
@@ -27,6 +33,7 @@ export const posVideosApi = async (data) => {
     console.log(data);
 
     const response = await axios.post(
+      "https://animetubebackend.onrender.com/videos/upload"||
       "http://localhost:80/videos/upload",
       data,
       {
@@ -44,7 +51,10 @@ export const posVideosApi = async (data) => {
 
 export const updateVideosApi = async (id) => {
   axios
-    .patch(`http://localhost:80/videos/updating-product/${id}`)
+    .patch(
+      `https://animetubebackend.onrender.com/videos/updating-product/${id}` ||
+        `http://localhost:80/videos/updating-product/${id}`
+    )
     .then((r) => {
       console.log(r);
     })
@@ -54,7 +64,10 @@ export const updateVideosApi = async (id) => {
 };
 export const deleteVideosApi = async (id) => {
   axios
-    .delete(`http://localhost:80/videos//delete-product/${id}`)
+    .delete(
+      `https://animetubebackend.onrender.com/videos/delete-product/${id}`||
+      `http://localhost:80/videos/delete-product/${id}`
+    )
     .then((r) => {
       console.log(r);
     })

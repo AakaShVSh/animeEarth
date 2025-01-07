@@ -100,7 +100,7 @@ function UploadForm() {
             alignItems="center"
             justifyContent="center"
             borderRadius="4"
-            h="300px"
+            h="280px"
             position="relative"
           >
             <IconButton
@@ -134,7 +134,7 @@ function UploadForm() {
             alignItems="center"
             justifyContent="center"
             borderRadius="4"
-            h="300px"
+            h="250px"
             position="relative"
             overflow="hidden"
             cursor="pointer"
@@ -302,8 +302,11 @@ function UploadForm() {
           </Box>
         </Box>
       </Box>
-      <Box m="2%" w="100%">
-        <Button w="96%" bg="#21b8fd" onClick={() => uploadData()}>
+      <Box
+        w="96%"
+        margin="1% auto"
+      >
+        <Button w="100%" bg="#21b8fd" onClick={() => uploadData()}>
           Upload Video
         </Button>
       </Box>

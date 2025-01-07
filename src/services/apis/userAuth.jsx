@@ -16,7 +16,11 @@ export const userSignupApi = async (data) => {
   try {
     console.log(data);
 
-    const response = await axios.post("http://localhost:80/user/signup", data);
+    const response = await axios.post(
+      "https://animetubebackend.onrender.com/user/signup" ||
+        "http://localhost:80/user/signup",
+      data
+    );
     // setCookies("AuthToken", response.data.token);
     console.log(response);
     // return response; // Return the response if needed
@@ -27,7 +31,11 @@ export const userSignupApi = async (data) => {
 
 export const userSigninApi = async (data) => {
   try {
-    const response = await axios.post(`http://localhost:80/user/signin`, data);
+    const response = await axios.post(
+      "https://animetubebackend.onrender.com/user/signin" ||
+        `http://localhost:80/user/signin`,
+      data
+    );
     setCookies("AuthToken", response.data.token);
     setCookies("_user", response.data.data._id);
 
@@ -39,7 +47,10 @@ export const userSigninApi = async (data) => {
 
 export const forgotPasswordApi = async () => {
   axios
-    .post(`http://localhost:80/user/forgot-password`)
+    .post(
+      "https://animetubebackend.onrender.com/user/forgot-password" ||
+        `http://localhost:80/user/forgot-password`
+    )
     .then((r) => {
       console.log(r);
     })
@@ -50,7 +61,10 @@ export const forgotPasswordApi = async () => {
 
 export const changePasswordApi = async (id) => {
   axios
-    .patch(`http://localhost:80/user/change-password/${id}`)
+    .patch(
+      `https://animetubebackend.onrender.com/user/change-password${id}` ||
+        `http://localhost:80/user/change-password/${id}`
+    )
     .then((r) => {
       console.log(r);
     })

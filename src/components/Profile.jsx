@@ -1,6 +1,6 @@
 import { Avatar, Box, Text, HStack, Divider, Flex } from "@chakra-ui/react";
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";import VideoGrid from "./VideoGrid";
 const ProfileSidebar = () => {
   useEffect(() => {
     localStorage.setItem("SideBar", JSON.stringify("ProfileSideBar"));
@@ -61,7 +61,7 @@ const ProfileSidebar = () => {
           </Link>
           <Link to="#">
             <Text fontSize="md" _hover={{ color: "gray.400" }}>
-              Your Profit
+              Downloads
             </Text>
           </Link>
           <Link to="#">
@@ -72,10 +72,10 @@ const ProfileSidebar = () => {
         </HStack>
         {/* Divider */}
         <Divider mt={4} mb={4} borderColor="whiteAlpha.600" />
-      </Box>
+        {/* Main Content Area */}
+      <Box flex="1" bg="gray.800"><VideoGrid/></Box>  </Box>
 
-      {/* Main Content Area */}
-      <Box flex="1" bg="gray.800"></Box>
+  
     </Flex>
   );
 };
