@@ -157,7 +157,8 @@ const VideoPlayerDisplay = () => {
         style={{
           width: "100%",
           height: "100%",
-          objectFit: "cover",
+          objectFit: "contain", // Ensures the full video fits in the player
+          backgroundColor: "black", // Optional: Add a background color
         }}
         autoPlay
         controls={false}
