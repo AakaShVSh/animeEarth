@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Box, VStack, IconButton, Text, useMediaQuery } from "@chakra-ui/react";
+import {
+  Box,
+  HStack,
+  VStack,
+  IconButton,
+  Text,
+  useMediaQuery,
+} from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import {
   FiHome,
@@ -40,6 +47,47 @@ function Sidebar() {
     { label: "Privacy", icon: MdPrivacyTip },
     { label: "Policy", icon: MdPolicy },
   ];
+
+  if (isMobile) {
+    return (
+      <Box position="relative" h="100vh">
+        {/* Mobile Bottom Navigation */}
+        <Box
+          position="fixed"
+          bottom="0"
+          left="0"
+          w="100%"
+          bg="gray.800"
+          p="3"
+          zIndex="10"
+          boxShadow="md"
+          overflowX="auto" // Enable horizontal scrolling
+          whiteSpace="nowrap" // Prevent items from wrapping
+        >
+          <HStack spacing="4" minWidth="max-content">
+            {menuItems.map((item, index) => (
+              <Link key={index} to={item.link || "#"}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  color="white"
+                  _hover={{ color: "#00c4ff" }}
+                  flex="0 0 auto" // Prevent shrinking
+                  px="2" // Add horizontal padding
+                >
+                  <Box as={item.icon} fontSize="24px" />
+                  <Text fontSize="xs" mt="1">
+                    {item.label}
+                  </Text>
+                </Box>
+              </Link>
+            ))}
+          </HStack>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box position="relative" h="100vh">
@@ -84,14 +132,8 @@ function Sidebar() {
               >
                 <Box
                   as={item.icon}
-                  fontSize={
-                    isOpen
-                      ? isMobile
-                        ? "18px" // Smaller icon size for open sidebar on mobile
-                        : "20px" // Default icon size for open sidebar
-                      : "28px" // Larger icon size for closed sidebar
-                  }
-                  _hover={{ color: "#00c4ff" }} // Hover color change
+                  fontSize={isOpen ? "20px" : "28px"}
+                  _hover={{ color: "#00c4ff" }}
                 />
                 {isOpen && item.label}
               </Text>

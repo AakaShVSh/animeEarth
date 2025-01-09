@@ -1,11 +1,16 @@
 import axios from "axios";
 
+const getBaseUrl = () => {
+  // Check if the app is running locally
+  return window.location.hostname === "localhost"
+    ? "http://localhost:80"
+    : "https://animetubebackend.onrender.com";
+};
+
 export const getVideosApi = async (setVideos) => {
+  const baseUrl = getBaseUrl();
   axios
-    .get(
-      "https://animetubebackend.onrender.com/videos" ||
-        "http://localhost:80/videos"
-    )
+    .get(`${baseUrl}/videos`)
     .then((r) => {
       console.log(r);
       setVideos(r.data);
@@ -14,12 +19,11 @@ export const getVideosApi = async (setVideos) => {
       console.log(error);
     });
 };
+
 export const getUserVideosApi = async (setVideos) => {
+  const baseUrl = getBaseUrl();
   axios
-    .get(
-      "https://animetubebackend.onrender.com/videos" ||
-        "http://localhost:80/videos"
-    )
+    .get(`${baseUrl}/videos`)
     .then((r) => {
       console.log(r);
       setVideos(r.data);
@@ -28,20 +32,17 @@ export const getUserVideosApi = async (setVideos) => {
       console.log(error);
     });
 };
+
 export const posVideosApi = async (data) => {
   try {
     console.log(data);
 
-    const response = await axios.post(
-      "https://animetubebackend.onrender.com/videos/upload"||
-      "http://localhost:80/videos/upload",
-      data,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    const baseUrl = getBaseUrl();
+    const response = await axios.post(`${baseUrl}/videos/upload`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     console.log(response);
     // return response; // Return the response if needed
   } catch (error) {
@@ -50,11 +51,9 @@ export const posVideosApi = async (data) => {
 };
 
 export const updateVideosApi = async (id) => {
+  const baseUrl = getBaseUrl();
   axios
-    .patch(
-      `https://animetubebackend.onrender.com/videos/updating-product/${id}` ||
-        `http://localhost:80/videos/updating-product/${id}`
-    )
+    .patch(`${baseUrl}/videos/updating-product/${id}`)
     .then((r) => {
       console.log(r);
     })
@@ -62,12 +61,11 @@ export const updateVideosApi = async (id) => {
       console.log(error);
     });
 };
+
 export const deleteVideosApi = async (id) => {
+  const baseUrl = getBaseUrl();
   axios
-    .delete(
-      `https://animetubebackend.onrender.com/videos/delete-product/${id}`||
-      `http://localhost:80/videos/delete-product/${id}`
-    )
+    .delete(`${baseUrl}/videos/delete-product/${id}`)
     .then((r) => {
       console.log(r);
     })

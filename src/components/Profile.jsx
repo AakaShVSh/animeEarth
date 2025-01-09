@@ -73,7 +73,7 @@ const ProfileSidebar = () => {
         {/* Divider */}
         <Divider mt={4} mb={4} borderColor="whiteAlpha.600" />
         {/* Main Content Area */}
-      <Box flex="1" bg="gray.800"><VideoGrid/></Box>  </Box>
+      <Box flex="1" bg="gray.800"></Box>  </Box>
 
   
     </Flex>
