@@ -2,9 +2,11 @@ import axios from "axios";
 
 const getBaseUrl = () => {
   // Check if the app is running locally
-  return window.location.hostname === "localhost"
-    ? "http://localhost:80"
-    : "https://animetubebackend.onrender.com";
+  // return window.location.hostname === "localhost"
+  //   ? "http://localhost:80"
+  //   : "https://animetubebackend.onrender.com";
+
+  return "http://localhost:80";
 };
 
 export const getVideosApi = async (setVideos) => {
@@ -20,13 +22,15 @@ export const getVideosApi = async (setVideos) => {
     });
 };
 
-export const getUserVideosApi = async (setVideos) => {
+export const getUserVideosApi = async (setUserShowVideoCollection, id) => {
   const baseUrl = getBaseUrl();
+  console.log(id);
+  
   axios
-    .get(`${baseUrl}/videos`)
+    .get(`${baseUrl}/videos/user-videos/${id}`)
     .then((r) => {
       console.log(r);
-      setVideos(r.data);
+      setUserShowVideoCollection(r.data);
     })
     .catch((error) => {
       console.log(error);

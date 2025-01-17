@@ -67,7 +67,7 @@ console.log(videoUrl);
       </Box>
 
       <Box p="4" bg="gray.700">
-        <Text fontWeight="bold" textAlign="center">
+        <Text fontWeight="bold" textAlign="">
           {title}
         </Text>
       </Box>

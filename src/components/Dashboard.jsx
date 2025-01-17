@@ -8,7 +8,7 @@ import {
   useColorModeValue,
   Progress,
   VStack,
-  Center,
+  Flex,
 } from "@chakra-ui/react";
 import { Line } from "react-chartjs-2";
 import {
@@ -22,7 +22,7 @@ import {
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement);
 
 const Dashboard = () => {
-  const bg = useColorModeValue("gray.100", "gray.900");
+  const bg = useColorModeValue("#363b46", "#363b46");
   const boxBg = useColorModeValue("gray.600", "purple.800");
   const textColor = useColorModeValue("white", "gray.100");
 
@@ -56,44 +56,78 @@ const Dashboard = () => {
   };
 
   return (
-    <Box
-      p={2}
-      height={{ base: "92.9vh", md: "91.9vh", lg: "90.6vh" }}
-      bg="gray.900"
-      // minH="100vh"
-      color="white"
-    >
+    <Box p={4} minH="100vh" bg={bg} color={textColor}>
       {/* Income Overview */}
-      <Grid templateColumns="repeat(3, 1fr)" gap={6} mb={8}>
-        <Box bg={boxBg} p={6} borderRadius="lg" textAlign="center">
+      <Grid
+        templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}
+        gap={6}
+        mb={8}
+      >
+        <Box bg={boxBg} p={6} borderRadius="lg" textAlign="center" shadow="md">
           <Heading size="lg" color={textColor}>
             0.04
           </Heading>
-          <Text color={textColor}>This Month's Income</Text>
+          <Text mt={2} color={textColor}>
+            This Month's Income
+          </Text>
         </Box>
-        <Box bg={boxBg} p={6} borderRadius="lg" textAlign="center">
+        <Box bg={boxBg} p={6} borderRadius="lg" textAlign="center" shadow="md">
           <Heading size="lg" color={textColor}>
             0.04
           </Heading>
-          <Text color={textColor}>Yesterday's Income</Text>
+          <Text mt={2} color={textColor}>
+            Yesterday's Income
+          </Text>
         </Box>
-        <Box bg={boxBg} p={6} borderRadius="lg" textAlign="center">
+        <Box bg={boxBg} p={6} borderRadius="lg" textAlign="center" shadow="md">
           <Heading size="lg" color={textColor}>
             550
           </Heading>
-          <Text color={textColor}>Overall Income</Text>
+          <Text mt={2} color={textColor}>
+            Overall Income
+          </Text>
         </Box>
       </Grid>
 
       {/* Graph Section */}
-      <Box m="auto" bg="gray.700" p={3}  h="50%" w="50%" borderRadius="lg" mb={5}>
-        <Line data={data} />
-      </Box>
+      <Flex
+        justifyContent="center"
+        alignItems="center"
+        mb={8}
+        flexDirection="column"
+      >
+        <Box
+          bg={boxBg}
+          p={4}
+          borderRadius="lg"
+          shadow="md"
+          width={{ base: "100%", md: "80%", lg: "60%" }}
+          overflow="hidden"
+        >
+          <Line data={data} />
+        </Box>
+      </Flex>
 
       {/* Withdrawal Section */}
-      <VStack spacing={4}>
-        <Text fontSize="lg">Withdrawals available after 1000 income</Text>
-        <Progress value={55} colorScheme="teal" size="lg" width="full" />
+      <VStack
+        spacing={6}
+        bg={boxBg}
+        p={6}
+        borderRadius="lg"
+        shadow="md"
+        maxW="lg"
+        mx="auto"
+      >
+        <Text fontSize="lg" textAlign="center">
+          Withdrawals available after $1000 income
+        </Text>
+        <Progress
+          value={55}
+          colorScheme="teal"
+          size="lg"
+          width="full"
+          borderRadius="lg"
+        />
         <Button colorScheme="teal" size="lg" isDisabled>
           Withdraw
         </Button>

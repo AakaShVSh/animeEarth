@@ -12,7 +12,7 @@ function VideoGrid() {
     }
   }, [videos]);
   return (
-    <SimpleGrid columns={[1, 2, 3, 4]} scroll="" spacing="5" m="2%">
+    <SimpleGrid columns={[1, 2, 3, 4, 5]} scroll="" spacing="5" m="2%">
       {videos?.map((video, index) => (
         <VideoCard key={index}
           audience={video.audience}

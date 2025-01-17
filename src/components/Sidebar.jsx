@@ -116,7 +116,7 @@ function Sidebar() {
         transition="width 0.3s ease-in-out"
         overflow="hidden"
       >
-        <VStack spacing="4" align={isOpen ? "start" : "center"}>
+        <VStack spacing="4"  align={isOpen ? "start" : "center"}>
           {menuItems.map((item, index) => (
             <Link key={index} to={item.link || "#"}>
               <Text
