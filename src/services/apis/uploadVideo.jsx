@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const getBaseUrl = () => {
-  Check if the app is running locally
+  // Check if the app is running locally
   return window.location.hostname === "localhost"
     ? "http://localhost:80"
     : "https://animetubebackend.onrender.com";
