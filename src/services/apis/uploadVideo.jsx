@@ -1,12 +1,12 @@
 import axios from "axios";
 
 const getBaseUrl = () => {
-  // Check if the app is running locally
-  // return window.location.hostname === "localhost"
-  //   ? "http://localhost:80"
-  //   : "https://animetubebackend.onrender.com";
+  Check if the app is running locally
+  return window.location.hostname === "localhost"
+    ? "http://localhost:80"
+    : "https://animetubebackend.onrender.com";
 
-  return "http://localhost:80";
+  // return "http://localhost:80";
 };
 
 export const getVideosApi = async (setVideos) => {
