@@ -21,7 +21,7 @@ function TopBar() {
     <Flex 
       position="sticky"
       gap="70px"
-      h="2px"
+      h="44px"
       top="0"
       zIndex="1000"
       justify="space-between"
