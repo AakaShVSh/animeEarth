@@ -56,9 +56,9 @@ function TopBar() {
             </Link>
           </Box>
         ) : (
-          <Flex gap="1px">
+          <Flex gap="10px">
             <Link to="/SignIn">
-              <Button p="2px">Sign In</Button>
+              <Button fontSize="sm">Sign In</Button>
             </Link>
             <Link to="/SignUp">
               <Button>Sign Up</Button>
