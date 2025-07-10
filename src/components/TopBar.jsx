@@ -21,7 +21,6 @@ function TopBar() {
     <Flex 
       position="sticky"
       gap="70px"
-      h="49px"
       top="0"
       zIndex="1000"
       justify="space-between"
@@ -58,10 +57,10 @@ function TopBar() {
         ) : (
           <Flex gap="10px">
             <Link to="/SignIn">
-              <Button fontSize="16px" height="44px" p="4px">Sign In</Button>
+              <Button>Sign In</Button>
             </Link>
             <Link to="/SignUp">
-              <Button fontSize="sm">Sign Up</Button>
+              <Button>Sign Up</Button>
             </Link>
           </Flex>
         )}
