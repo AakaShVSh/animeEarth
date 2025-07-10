@@ -31,7 +31,7 @@ function TopBar() {
       color="white"
     >
       {/* Search Input Box */}
-      <Box ml="8%" w="70%">
+      <Box ml="8%" w="70%" h="44px">
         <Input
           type="search"
           width="100%"
