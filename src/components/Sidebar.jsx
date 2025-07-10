@@ -114,7 +114,7 @@ function Sidebar() {
         h="100vh"
         p={isOpen ? "5" : "2"}
         transition="width 0.3s ease-in-out"
-        //overflow="hidden"
+        overflow="hidden"
       >
         <VStack spacing="4"  align={isOpen ? "start" : "center"}>
           {menuItems.map((item, index) => (
