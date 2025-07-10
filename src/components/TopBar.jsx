@@ -61,7 +61,7 @@ function TopBar() {
               <Button fontSize="sm" p="0px">Sign In</Button>
             </Link>
             <Link to="/SignUp">
-              <Button>Sign Up</Button>
+              <Button fontSize="sm">Sign Up</Button>
             </Link>
           </Flex>
         )}
