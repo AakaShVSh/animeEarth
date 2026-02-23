@@ -1,0 +1,36 @@
+created login registration
+upload video,
+videoplayer 
+videocard videogrid and display
+
+to be done
+dashboard
+profile 
+terms and condition
+privacy and policy
+adsence by video after monitization in future 
+voice command intergate with ai in future
+Player Page
+google auth
+Histrory 
+saved videos
+
+for now
+dashboard 
+profile
+saved vodeos
+history
+google auth done
+Player page
+terms and condition 
+privacy policy
+
+backend
+video with quality and category
+
+
+upload --> partially done
+login --> done
+profile --> partially done
+data management
+dashboard --> fontent done

@@ -1,0 +1,72 @@
+/* Portal Root Styles - Add this to your index.css or App.css */
+
+/* Ensure portal container is at the top level */
+#portal-root {
+  position: relative;
+  z-index: 9999;
+}
+
+/* Fix for body overflow when modals/portals are open */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Ensure main app container accounts for fixed navbar */
+#root {
+  position: relative;
+}
+
+/* Add padding to main content to account for fixed TopBar */
+.main-content {
+  padding-top: 64px; /* Height of TopBar */
+  min-height: 100vh;
+}
+
+/* Desktop adjustments for sidebar */
+@media (min-width: 768px) {
+  .main-content {
+    margin-left: 80px; /* Width of collapsed sidebar */
+    transition: margin-left 0.3s ease;
+  }
+  
+  .main-content.sidebar-expanded {
+    margin-left: 280px; /* Width of expanded sidebar */
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 767px) {
+  .main-content {
+    padding-bottom: 80px; /* Space for bottom navigation */
+  }
+}
+
+/* Prevent z-index issues with portals */
+.chakra-portal {
+  z-index: 1000;
+}
+
+/* Ensure dropdowns and menus appear above everything */
+.chakra-menu__menu-list {
+  z-index: 1001 !important;
+}
+
+.chakra-modal__overlay {
+  z-index: 1400 !important;
+}
+
+.chakra-modal__content {
+  z-index: 1401 !important;
+}
+
+/* Smooth transitions for layout changes */
+* {
+  transition-property: margin, padding, width;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
+
+/* Fix for portal elements positioning */
+#portal-root > * {
+  position: relative;
+}

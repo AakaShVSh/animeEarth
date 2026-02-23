@@ -1,14 +1,11 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { getCookies } from "./cookies";
+import { isAuthenticated } from "./apis/userAuth"; // reads isLoggedIn cookie
 
 const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = getCookies("AuthToken"); // Replace with your authentication logic
-
-  if (isAuthenticated===null) {
-    return <Navigate to="/signin" replace />;
+  if (!isAuthenticated()) {
+    return <Navigate to="/SignIn" replace />;
   }
-
   return children;
 };
 
