@@ -280,7 +280,6 @@ function TopBar() {
     navigate("/");
   }, [navigate]);
 
-<<<<<<< HEAD
   const TopBarContent = (
     <Box>
       <Flex
@@ -310,31 +309,6 @@ function TopBar() {
             VH
           </Text>
         </Box>
-=======
-  return (
-    <Flex 
-      position="sticky"
-      gap="70px"
-      top="0"
-      zIndex="1000"
-      justify="space-between"
-      align="center"
-      bg="#0d0503"
-      p="2"
-      color="white"
-    >
-      {/* Search Input Box */}
-      <Box ml="8%" w="70%" h="44px">
-        <Input
-          type="search"
-          width="100%"
-          bg="white"
-          color="gray.700"
-          placeholder="Search..."
-          aria-label="Search videos"
-        />
-      </Box>
->>>>>>> 9adf1f3b424eaf9756e48732b75e2d3ece328434
 
         {/* Search Bar */}
         <Box

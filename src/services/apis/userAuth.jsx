@@ -98,9 +98,9 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const getBaseUrl = () => {
-  // if (window.location.hostname === "localhost") {
-  //   return "http://localhost:80/user";
-  // }
+  if (window.location.hostname === "localhost") {
+    return "http://localhost:80/user";
+  }
   return "https://animetubebackend.onrender.com/user";
 };
 
