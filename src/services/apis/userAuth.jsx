@@ -12,7 +12,7 @@
 
 // const axiosInstance = axios.create({
 //   baseURL: BASE_URL,
-//   withCredentials: true, // sends cookies cross-origin
+//   withCredentials: true,
 //   timeout: 10000,
 // });
 
@@ -43,24 +43,28 @@
 // export const SignoutApi = async () => {
 //   try {
 //     await axiosInstance.post("/signout");
-//     // Backend clears all cookies
 //   } catch (error) {
-//     // Even if request fails, clear what we can
 //     Cookies.remove("isLoggedIn");
 //     console.log(error);
 //   }
 // };
 
-// // Reads public isLoggedIn cookie — no sensitive data inside
 // export const isAuthenticated = () => {
 //   return Cookies.get("isLoggedIn") === "true";
 // };
 
-// // Calls backend to verify token and get user info
+// // ─── FIXED: now fetches full user profile from DB, not just session cookie ───
+// // This ensures hasChannel, channelName, channelDescription are always returned.
+// // Your /me endpoint must SELECT these fields from MongoDB (see note below).
 // export const checkAuthApi = async () => {
 //   try {
 //     const response = await axiosInstance.get("/me");
-//     return { authenticated: true, user: response.data.user };
+//     const user = response.data.user;
+
+//     // If your /me endpoint already returns the full user with studio fields,
+//     // this is all you need. If it only returns basic session fields,
+//     // you need to fix the backend (see note at bottom of file).
+//     return { authenticated: true, user };
 //   } catch {
 //     return { authenticated: false, user: null };
 //   }
@@ -149,9 +153,20 @@ export const isAuthenticated = () => {
   return Cookies.get("isLoggedIn") === "true";
 };
 
-// ─── FIXED: now fetches full user profile from DB, not just session cookie ───
-// This ensures hasChannel, channelName, channelDescription are always returned.
-// Your /me endpoint must SELECT these fields from MongoDB (see note below).
+// ─── checkAuthApi: returns full user profile from /me endpoint ───────────────
+// The /me endpoint MUST return these fields for the UI to work correctly:
+//   { _id, username, email, profilePicture, hasChannel, channelName,
+//     channelDescription, subscribers, createdAt }
+//
+// If your /me controller only returns session data, update it like this:
+//
+//   const user = await User.findById(req.user._id).select(
+//     "_id username email profilePicture hasChannel channelName channelDescription subscribers createdAt"
+//   );
+//   res.json({ user });
+//
+// Google OAuth users: profilePicture is populated from Google at signup.
+// Email-only users: profilePicture is "" — TopBar shows first letter of email instead.
 export const checkAuthApi = async () => {
   try {
     const response = await axiosInstance.get("/me");

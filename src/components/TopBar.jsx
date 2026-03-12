@@ -1,9 +1,8 @@
-// import React, { useEffect, useState } from "react";
+// import React, { useEffect, useState, useCallback } from "react";
 // import {
 //   Flex,
 //   Box,
 //   Input,
-//   Image,
 //   Button,
 //   HStack,
 //   InputGroup,
@@ -18,7 +17,7 @@
 //   useMediaQuery,
 //   Text,
 // } from "@chakra-ui/react";
-// import { Link } from "react-router-dom";
+// import { Link, useNavigate } from "react-router-dom";
 // import {
 //   FiSearch,
 //   FiUpload,
@@ -27,34 +26,37 @@
 //   FiSettings,
 //   FiLogOut,
 // } from "react-icons/fi";
-// import { getCookies } from "../services/cookies";
 // import Portal from "./helper/Portal";
-// import { SignoutApi } from "../services/apis/userAuth";
-// // import Portal from "./Portal";
+// import { SignoutApi, isAuthenticated } from "../services/apis/userAuth";
 
 // function TopBar() {
-//   const [authToken, setAuthToken] = useState(() => getCookies("AuthToken"));
+//   const [loggedIn, setLoggedIn] = useState(() => isAuthenticated());
 //   const [isMobile] = useMediaQuery("(max-width: 768px)");
+//   const navigate = useNavigate();
 
+//   // Poll isLoggedIn cookie every second (fast, no network request needed)
 //   useEffect(() => {
 //     const intervalId = setInterval(() => {
-//       const updatedCookie = getCookies("AuthToken");
-//       if (updatedCookie !== authToken) {
-//         setAuthToken(updatedCookie);
+//       const currentStatus = isAuthenticated();
+//       if (currentStatus !== loggedIn) {
+//         setLoggedIn(currentStatus);
 //       }
 //     }, 1000);
-
 //     return () => clearInterval(intervalId);
-//   }, [authToken]);
+//   }, [loggedIn]);
+
+//   const handleSignout = useCallback(async () => {
+//     await SignoutApi();
+//     setLoggedIn(false);
+//     navigate("/");
+//   }, [navigate]);
 
 //   const TopBarContent = (
 //     <Box>
-//       {" "}
 //       <Flex
 //         position="fixed"
 //         top="0"
-//         w={"100%"}
-//         // left={{ base: "0", md: "80px" }} // Space for collapsed sidebar on desktop
+//         w="100%"
 //         right="0"
 //         zIndex="1000"
 //         justify="space-between"
@@ -67,7 +69,7 @@
 //         boxShadow="sm"
 //         transition="left 0.3s ease"
 //       >
-//         {/* Logo - Hidden on desktop when sidebar is visible */}
+//         {/* Logo */}
 //         <Box display={{ base: "block", md: "none" }} mr="4">
 //           <Text
 //             fontSize="xl"
@@ -79,7 +81,7 @@
 //           </Text>
 //         </Box>
 
-//         {/* Search Bar - Center on desktop, full width on mobile */}
+//         {/* Search Bar */}
 //         <Box
 //           flex="1"
 //           maxW={{ base: "100%", md: "600px" }}
@@ -106,11 +108,10 @@
 //           </InputGroup>
 //         </Box>
 
-//         {/* Right Section - Actions and Profile */}
+//         {/* Right Section */}
 //         <HStack spacing={{ base: "2", md: "4" }} ml="4">
-//           {authToken ? (
+//           {loggedIn ? (
 //             <>
-//               {/* Upload Button - Hidden on mobile */}
 //               <Link to="/Upload">
 //                 <IconButton
 //                   icon={<FiUpload />}
@@ -122,7 +123,6 @@
 //                 />
 //               </Link>
 
-//               {/* Notifications - Hidden on mobile */}
 //               <Menu>
 //                 <MenuButton
 //                   as={IconButton}
@@ -131,25 +131,12 @@
 //                   size={{ base: "sm", md: "md" }}
 //                   display={{ base: "none", md: "flex" }}
 //                   _hover={{ bg: "gray.100" }}
-//                   position="relative"
-//                 >
-//                   {/* Notification Badge */}
-//                   <Box
-//                     position="absolute"
-//                     top="1"
-//                     right="1"
-//                     w="8px"
-//                     h="8px"
-//                     bg="red.500"
-//                     borderRadius="full"
-//                   />
-//                 </MenuButton>
+//                 />
 //                 <MenuList zIndex="1001">
 //                   <MenuItem>No new notifications</MenuItem>
 //                 </MenuList>
 //               </Menu>
 
-//               {/* Profile Menu */}
 //               <Menu>
 //                 <MenuButton
 //                   as={Box}
@@ -159,7 +146,7 @@
 //                 >
 //                   <Avatar
 //                     size={{ base: "sm", md: "md", lg: "sm" }}
-//                     src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+//                     src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1470"
 //                     name="User"
 //                     border="2px solid"
 //                     borderColor="blue.500"
@@ -180,7 +167,7 @@
 //                   <MenuItem icon={<FiSettings />}>Settings</MenuItem>
 //                   <MenuDivider />
 //                   <MenuItem
-//                     onClick={SignoutApi}
+//                     onClick={handleSignout}
 //                     icon={<FiLogOut />}
 //                     color="red.500"
 //                   >
@@ -221,7 +208,6 @@
 //     </Box>
 //   );
 
-//   // Use Portal to render TopBar at body level to prevent overlap
 //   return <Portal>{TopBarContent}</Portal>;
 // }
 
@@ -237,6 +223,7 @@ import {
   InputGroup,
   InputLeftElement,
   Avatar,
+  AvatarBadge,
   Menu,
   MenuButton,
   MenuList,
@@ -256,29 +243,63 @@ import {
   FiLogOut,
 } from "react-icons/fi";
 import Portal from "./helper/Portal";
-import { SignoutApi, isAuthenticated } from "../services/apis/userAuth";
+import {
+  SignoutApi,
+  isAuthenticated,
+  checkAuthApi,
+} from "../services/apis/userAuth";
 
 function TopBar() {
   const [loggedIn, setLoggedIn] = useState(() => isAuthenticated());
+  const [currentUser, setCurrentUser] = useState(null);
   const [isMobile] = useMediaQuery("(max-width: 768px)");
   const navigate = useNavigate();
 
-  // Poll isLoggedIn cookie every second (fast, no network request needed)
+  // ── Fetch real user data when logged in ───────────────────────────────
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      const currentStatus = isAuthenticated();
-      if (currentStatus !== loggedIn) {
-        setLoggedIn(currentStatus);
-      }
+    if (loggedIn) {
+      checkAuthApi().then(({ authenticated, user }) => {
+        if (authenticated && user) setCurrentUser(user);
+        else {
+          setCurrentUser(null);
+          setLoggedIn(false);
+        }
+      });
+    } else {
+      setCurrentUser(null);
+    }
+  }, [loggedIn]);
+
+  // ── Poll cookie for auth state changes (login/logout in other tab) ────
+  useEffect(() => {
+    const id = setInterval(() => {
+      const current = isAuthenticated();
+      if (current !== loggedIn) setLoggedIn(current);
     }, 1000);
-    return () => clearInterval(intervalId);
+    return () => clearInterval(id);
   }, [loggedIn]);
 
   const handleSignout = useCallback(async () => {
     await SignoutApi();
     setLoggedIn(false);
+    setCurrentUser(null);
     navigate("/");
   }, [navigate]);
+
+  // ── Avatar display logic ───────────────────────────────────────────────
+  // Priority: profilePicture (Google OAuth or uploaded) → first letter of email → first letter of username
+  const avatarSrc = currentUser?.profilePicture || null;
+
+  // Name used by Chakra Avatar for generating fallback initials
+  // Use email first (so "john@gmail.com" → "J"), then username, then "U"
+  const avatarName = currentUser?.email || currentUser?.username || "User";
+
+  // Single uppercase letter shown when no image — first char of email or username
+  const fallbackLetter = (
+    currentUser?.email?.[0] ||
+    currentUser?.username?.[0] ||
+    "U"
+  ).toUpperCase();
 
   const TopBarContent = (
     <Box>
@@ -298,7 +319,7 @@ function TopBar() {
         boxShadow="sm"
         transition="left 0.3s ease"
       >
-        {/* Logo */}
+        {/* Logo — mobile only */}
         <Box display={{ base: "block", md: "none" }} mr="4">
           <Text
             fontSize="xl"
@@ -310,7 +331,7 @@ function TopBar() {
           </Text>
         </Box>
 
-        {/* Search Bar */}
+        {/* Search bar */}
         <Box
           flex="1"
           maxW={{ base: "100%", md: "600px" }}
@@ -337,10 +358,11 @@ function TopBar() {
           </InputGroup>
         </Box>
 
-        {/* Right Section */}
+        {/* Right section */}
         <HStack spacing={{ base: "2", md: "4" }} ml="4">
           {loggedIn ? (
             <>
+              {/* Upload */}
               <Link to="/Upload">
                 <IconButton
                   icon={<FiUpload />}
@@ -352,6 +374,7 @@ function TopBar() {
                 />
               </Link>
 
+              {/* Notifications */}
               <Menu>
                 <MenuButton
                   as={IconButton}
@@ -366,39 +389,111 @@ function TopBar() {
                 </MenuList>
               </Menu>
 
+              {/* Profile avatar menu */}
               <Menu>
                 <MenuButton
                   as={Box}
                   cursor="pointer"
-                  _hover={{ opacity: 0.8 }}
+                  _hover={{ opacity: 0.85 }}
                   transition="opacity 0.2s"
                 >
-                  <Avatar
-                    size={{ base: "sm", md: "md", lg: "sm" }}
-                    src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1470"
-                    name="User"
-                    border="2px solid"
-                    borderColor="blue.500"
-                  />
+                  {avatarSrc ? (
+                    // Has a real profile picture (Google OAuth or uploaded)
+                    <Avatar
+                      size={{ base: "sm", md: "sm" }}
+                      src={avatarSrc}
+                      name={avatarName}
+                      border="2px solid"
+                      borderColor="blue.400"
+                    />
+                  ) : (
+                    // No picture — show colored circle with first letter
+                    <Avatar
+                      size={{ base: "sm", md: "sm" }}
+                      name={avatarName}
+                      bg="blue.500"
+                      color="white"
+                      fontWeight="bold"
+                      border="2px solid"
+                      borderColor="blue.400"
+                    >
+                      {/* Chakra's Avatar auto-generates initials from `name`,
+                          but we override to guarantee single uppercase letter */}
+                    </Avatar>
+                  )}
                 </MenuButton>
-                <MenuList zIndex="1001">
+
+                <MenuList zIndex="1001" shadow="lg" borderRadius="xl" p="1">
+                  {/* User info header */}
+                  <Box px="3" py="2" mb="1">
+                    <HStack spacing="3">
+                      {avatarSrc ? (
+                        <Avatar size="sm" src={avatarSrc} name={avatarName} />
+                      ) : (
+                        <Avatar
+                          size="sm"
+                          name={avatarName}
+                          bg="blue.500"
+                          color="white"
+                          fontWeight="bold"
+                        />
+                      )}
+                      <Box>
+                        <Text
+                          fontSize="sm"
+                          fontWeight="semibold"
+                          color="gray.800"
+                          noOfLines={1}
+                        >
+                          {currentUser?.username ||
+                            currentUser?.email?.split("@")[0] ||
+                            "User"}
+                        </Text>
+                        {currentUser?.email && (
+                          <Text fontSize="xs" color="gray.500" noOfLines={1}>
+                            {currentUser.email}
+                          </Text>
+                        )}
+                      </Box>
+                    </HStack>
+                  </Box>
+
+                  <MenuDivider my="1" />
+
                   <Link to="/Profile">
-                    <MenuItem icon={<FiUser />}>Your Profile</MenuItem>
+                    <MenuItem icon={<FiUser />} borderRadius="lg" fontSize="sm">
+                      Your Profile
+                    </MenuItem>
                   </Link>
+
                   <Link to="/Upload">
                     <MenuItem
                       icon={<FiUpload />}
+                      borderRadius="lg"
+                      fontSize="sm"
                       display={{ base: "flex", md: "none" }}
                     >
                       Upload Video
                     </MenuItem>
                   </Link>
-                  <MenuItem icon={<FiSettings />}>Settings</MenuItem>
-                  <MenuDivider />
+
+                  <MenuItem
+                    icon={<FiSettings />}
+                    borderRadius="lg"
+                    fontSize="sm"
+                  >
+                    Settings
+                  </MenuItem>
+
+                  <MenuDivider my="1" />
+
                   <MenuItem
                     onClick={handleSignout}
                     icon={<FiLogOut />}
                     color="red.500"
+                    borderRadius="lg"
+                    fontSize="sm"
+                    _hover={{ bg: "red.50" }}
                   >
                     Sign Out
                   </MenuItem>

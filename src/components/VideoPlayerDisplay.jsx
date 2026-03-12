@@ -32,16 +32,15 @@
 //   FaClosedCaptioning,
 //   FaShareAlt,
 //   FaEllipsisV,
-//   FaTh,
-//   FaRedo,
-//   FaUndo,
 // } from "react-icons/fa";
 // import { MdPictureInPicture, MdSpeed, MdHighQuality } from "react-icons/md";
-// import { useLocation } from "react-router-dom";
+// import { useLocation, useSearchParams } from "react-router-dom";
 
 // const VideoPlayerDisplay = () => {
 //   const location = useLocation();
-//   const { videoUrl } = location.state || {};
+//   const [searchParams] = useSearchParams();
+//   const { videoUrl, qualities = [], metadata } = location.state || {};
+
 //   const videoRef = useRef(null);
 //   const containerRef = useRef(null);
 //   const controlsTimeoutRef = useRef(null);
@@ -52,25 +51,26 @@
 //   const [volume, setVolume] = useState(100);
 //   const [previousVolume, setPreviousVolume] = useState(100);
 //   const [progress, setProgress] = useState(0);
-//   const [duration, setDuration] = useState(0);
+//   const [duration, setDuration] = useState(metadata?.duration || 0);
 //   const [currentTime, setCurrentTime] = useState(0);
 //   const [showControls, setShowControls] = useState(true);
 //   const [isHovering, setIsHovering] = useState(false);
 //   const [isBuffering, setIsBuffering] = useState(false);
 //   const [playbackSpeed, setPlaybackSpeed] = useState(1);
-//   const [videoQuality, setVideoQuality] = useState("Auto");
 //   const [isPiPActive, setIsPiPActive] = useState(false);
 //   const [showCaptions, setShowCaptions] = useState(false);
 
-//   // Quality options (in real app, these would be different video sources)
-//   const qualityOptions = ["Auto", "1080p", "720p", "480p", "360p", "240p"];
+//   const qualityOptions = [
+//     { label: "Auto", url: videoUrl },
+//     ...qualities.map((q) => ({ label: q.quality, url: q.url })),
+//   ];
+//   const [selectedQuality, setSelectedQuality] = useState(qualityOptions[0]);
 //   const speedOptions = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
-//   // Keyboard shortcuts
 //   useEffect(() => {
 //     const handleKeyPress = (e) => {
 //       if (!videoRef.current) return;
-
+//       if (["INPUT", "TEXTAREA"].includes(e.target.tagName)) return;
 //       switch (e.key.toLowerCase()) {
 //         case " ":
 //         case "k":
@@ -86,12 +86,14 @@
 //           handleVolumeMuteToggle();
 //           break;
 //         case "arrowleft":
+//         case "j":
 //           e.preventDefault();
-//           handleSkipBackward();
+//           videoRef.current.currentTime -= 10;
 //           break;
 //         case "arrowright":
+//         case "l":
 //           e.preventDefault();
-//           handleSkipForward();
+//           videoRef.current.currentTime += 10;
 //           break;
 //         case "arrowup":
 //           e.preventDefault();
@@ -101,52 +103,29 @@
 //           e.preventDefault();
 //           handleVolumeChange(Math.max(0, volume - 10));
 //           break;
-//         case "j":
-//           e.preventDefault();
-//           videoRef.current.currentTime -= 10;
-//           break;
-//         case "l":
-//           e.preventDefault();
-//           videoRef.current.currentTime += 10;
-//           break;
-//         case "0":
-//         case "home":
-//           e.preventDefault();
-//           videoRef.current.currentTime = 0;
-//           break;
-//         case "end":
-//           e.preventDefault();
-//           videoRef.current.currentTime = duration;
-//           break;
 //         default:
-//           // Number keys 1-9 to jump to percentage
 //           if (e.key >= "1" && e.key <= "9") {
 //             e.preventDefault();
-//             const percentage = parseInt(e.key) * 10;
-//             videoRef.current.currentTime = (duration * percentage) / 100;
+//             videoRef.current.currentTime =
+//               (duration * parseInt(e.key) * 10) / 100;
 //           }
-//           break;
 //       }
 //     };
-
 //     window.addEventListener("keydown", handleKeyPress);
 //     return () => window.removeEventListener("keydown", handleKeyPress);
 //   }, [volume, duration]);
 
-//   // Auto-hide controls
 //   useEffect(() => {
 //     if (isPlaying && !isHovering) {
-//       controlsTimeoutRef.current = setTimeout(() => {
-//         setShowControls(false);
-//       }, 3000);
+//       controlsTimeoutRef.current = setTimeout(
+//         () => setShowControls(false),
+//         3000,
+//       );
 //     } else {
 //       setShowControls(true);
 //     }
-
 //     return () => {
-//       if (controlsTimeoutRef.current) {
-//         clearTimeout(controlsTimeoutRef.current);
-//       }
+//       if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
 //     };
 //   }, [isPlaying, isHovering]);
 
@@ -159,17 +138,14 @@
 //         );
 //       }
 //     };
-
 //     const handleWaiting = () => setIsBuffering(true);
 //     const handleCanPlay = () => setIsBuffering(false);
 //     const handleEnded = () => setIsPlaying(false);
-
 //     const video = videoRef.current;
 //     video?.addEventListener("timeupdate", updateProgress);
 //     video?.addEventListener("waiting", handleWaiting);
 //     video?.addEventListener("canplay", handleCanPlay);
 //     video?.addEventListener("ended", handleEnded);
-
 //     return () => {
 //       video?.removeEventListener("timeupdate", updateProgress);
 //       video?.removeEventListener("waiting", handleWaiting);
@@ -179,86 +155,51 @@
 //   }, []);
 
 //   useEffect(() => {
-//     const handleFullScreenChange = () => {
-//       if (!document.fullscreenElement) {
-//         setIsFullScreen(false);
-//       }
+//     const handleFs = () => {
+//       if (!document.fullscreenElement) setIsFullScreen(false);
 //     };
-
-//     const handlePiPChange = () => {
+//     const handlePiP = () =>
 //       setIsPiPActive(document.pictureInPictureElement !== null);
-//     };
-
-//     document.addEventListener("fullscreenchange", handleFullScreenChange);
-//     document.addEventListener("enterpictureinpicture", handlePiPChange);
-//     document.addEventListener("leavepictureinpicture", handlePiPChange);
-
+//     document.addEventListener("fullscreenchange", handleFs);
+//     document.addEventListener("enterpictureinpicture", handlePiP);
+//     document.addEventListener("leavepictureinpicture", handlePiP);
 //     return () => {
-//       document.removeEventListener("fullscreenchange", handleFullScreenChange);
-//       document.removeEventListener("enterpictureinpicture", handlePiPChange);
-//       document.removeEventListener("leavepictureinpicture", handlePiPChange);
+//       document.removeEventListener("fullscreenchange", handleFs);
+//       document.removeEventListener("enterpictureinpicture", handlePiP);
+//       document.removeEventListener("leavepictureinpicture", handlePiP);
 //     };
 //   }, []);
 
 //   useEffect(() => {
-//     if (videoRef.current) {
-//       videoRef.current.onloadedmetadata = () => {
+//     if (videoRef.current)
+//       videoRef.current.onloadedmetadata = () =>
 //         setDuration(videoRef.current.duration);
-//       };
-//     }
 //   }, []);
 
 //   const handlePlayPause = () => {
-//     if (videoRef.current) {
-//       if (isPlaying) {
-//         videoRef.current.pause();
-//       } else {
-//         videoRef.current.play();
-//       }
-//       setIsPlaying(!isPlaying);
-//     }
-//   };
-
-//   const handleSkipBackward = () => {
-//     if (videoRef.current) {
-//       videoRef.current.currentTime -= 10;
-//       showToast("⏪ -10s");
-//     }
-//   };
-
-//   const handleSkipForward = () => {
-//     if (videoRef.current) {
-//       videoRef.current.currentTime += 10;
-//       showToast("⏩ +10s");
-//     }
+//     if (!videoRef.current) return;
+//     if (isPlaying) videoRef.current.pause();
+//     else videoRef.current.play();
+//     setIsPlaying(!isPlaying);
 //   };
 
 //   const handleFullScreenToggle = () => {
-//     if (isFullScreen) {
-//       document.exitFullscreen?.();
-//     } else {
-//       containerRef.current?.requestFullscreen?.();
-//     }
+//     if (isFullScreen) document.exitFullscreen?.();
+//     else containerRef.current?.requestFullscreen?.();
 //     setIsFullScreen(!isFullScreen);
 //   };
 
 //   const handleVolumeChange = (value) => {
-//     if (videoRef.current) {
-//       videoRef.current.volume = value / 100;
-//     }
+//     if (videoRef.current) videoRef.current.volume = value / 100;
 //     setVolume(value);
-//     if (value > 0) {
-//       setPreviousVolume(value);
-//     }
+//     if (value > 0) setPreviousVolume(value);
 //   };
 
 //   const handleVolumeMuteToggle = () => {
 //     if (volume > 0) {
 //       setPreviousVolume(volume);
 //       handleVolumeChange(0);
-//     } else {
-//       handleVolumeChange(previousVolume);
-//     }
+//     } else handleVolumeChange(previousVolume);
 //   };
 
 //   const handleProgressChange = (value) => {
@@ -269,34 +210,36 @@
 //   };
 
 //   const handleSpeedChange = (speed) => {
-//     if (videoRef.current) {
-//       videoRef.current.playbackRate = speed;
-//       setPlaybackSpeed(speed);
-//       showToast(`Speed: ${speed}x`);
-//     }
+//     if (videoRef.current) videoRef.current.playbackRate = speed;
+//     setPlaybackSpeed(speed);
+//     showToast(`Speed: ${speed}x`);
 //   };
 
-//   const handleQualityChange = (quality) => {
-//     setVideoQuality(quality);
-//     showToast(`Quality: ${quality}`);
-//     // In real implementation, switch video source here
+//   const handleQualityChange = (opt) => {
+//     const t = videoRef.current?.currentTime || 0;
+//     const was = isPlaying;
+//     setSelectedQuality(opt);
+//     setTimeout(() => {
+//       if (videoRef.current) {
+//         videoRef.current.currentTime = t;
+//         if (was) videoRef.current.play();
+//       }
+//     }, 300);
+//     showToast(`Quality: ${opt.label}`);
 //   };
 
 //   const handlePictureInPicture = async () => {
 //     try {
-//       if (document.pictureInPictureElement) {
+//       if (document.pictureInPictureElement)
 //         await document.exitPictureInPicture();
-//       } else if (videoRef.current) {
+//       else if (videoRef.current)
 //         await videoRef.current.requestPictureInPicture();
-//       }
-//     } catch (error) {
-//       console.error("PiP error:", error);
-//     }
+//     } catch {}
 //   };
 
 //   const handleDownload = () => {
 //     const link = document.createElement("a");
-//     link.href = videoUrl;
+//     link.href = selectedQuality.url || videoUrl;
 //     link.download = `video_${Date.now()}.mp4`;
 //     document.body.appendChild(link);
 //     link.click();
@@ -311,18 +254,11 @@
 //           title: "Check out this video!",
 //           url: window.location.href,
 //         });
-//       } catch (error) {
-//         console.log("Share cancelled");
-//       }
+//       } catch {}
 //     } else {
 //       navigator.clipboard.writeText(window.location.href);
-//       showToast("🔗 Link copied to clipboard");
+//       showToast("🔗 Link copied");
 //     }
-//   };
-
-//   const toggleCaptions = () => {
-//     setShowCaptions(!showCaptions);
-//     showToast(showCaptions ? "Captions OFF" : "Captions ON");
 //   };
 
 //   const showToast = (message) => {
@@ -338,14 +274,12 @@
 
 //   const formatTime = (time) => {
 //     if (isNaN(time)) return "0:00";
-//     const hours = Math.floor(time / 3600);
-//     const minutes = Math.floor((time % 3600) / 60);
-//     const seconds = Math.floor(time % 60)
-//       .toString()
-//       .padStart(2, "0");
-//     return hours > 0
-//       ? `${hours}:${minutes.toString().padStart(2, "0")}:${seconds}`
-//       : `${minutes}:${seconds}`;
+//     const h = Math.floor(time / 3600),
+//       m = Math.floor((time % 3600) / 60),
+//       s = Math.floor(time % 60)
+//         .toString()
+//         .padStart(2, "0");
+//     return h > 0 ? `${h}:${m.toString().padStart(2, "0")}:${s}` : `${m}:${s}`;
 //   };
 
 //   const getVolumeIcon = () => {
@@ -354,27 +288,18 @@
 //     return <FaVolumeUp />;
 //   };
 
-//   const handleMouseMove = () => {
-//     setIsHovering(true);
-//     setShowControls(true);
-//   };
-
-//   const handleMouseLeave = () => {
-//     setIsHovering(false);
-//   };
-
 //   if (!videoUrl) {
 //     return (
 //       <Box
 //         bg="gray.900"
-//         h={{ base: "330px", md: "620px" }}
+//         h={{ base: "330px", md: "560px" }}
 //         display="flex"
 //         justifyContent="center"
 //         alignItems="center"
 //         borderRadius="xl"
 //       >
 //         <Text color="white" fontSize="lg">
-//           No video available to play.
+//           No video available.
 //         </Text>
 //       </Box>
 //     );
@@ -386,9 +311,8 @@
 //       bg="black"
 //       h={{
 //         base: isFullScreen ? "100vh" : "330px",
-//         md: isFullScreen ? "100vh" : "620px",
+//         md: isFullScreen ? "100vh" : "560px",
 //       }}
-//       mb={4}
 //       display="flex"
 //       justifyContent="center"
 //       alignItems="center"
@@ -397,36 +321,32 @@
 //       w="100%"
 //       borderRadius={isFullScreen ? "none" : "xl"}
 //       boxShadow={isFullScreen ? "none" : "2xl"}
-//       onMouseMove={handleMouseMove}
-//       onMouseLeave={handleMouseLeave}
+//       onMouseMove={() => {
+//         setIsHovering(true);
+//         setShowControls(true);
+//       }}
+//       onMouseLeave={() => setIsHovering(false)}
 //       cursor={showControls ? "default" : "none"}
-//       transition="all 0.3s ease"
 //     >
-//       {/* Video Element */}
 //       <video
 //         ref={videoRef}
-//         src={videoUrl}
-//         style={{
-//           width: "100%",
-//           height: "100%",
-//           objectFit: "contain",
-//         }}
+//         src={selectedQuality.url}
+//         style={{ width: "100%", height: "100%", objectFit: "contain" }}
 //         autoPlay
 //         controls={false}
 //         onClick={handlePlayPause}
 //       />
 
-//       {/* Loading Spinner */}
 //       {isBuffering && (
 //         <Box
 //           position="absolute"
 //           top="50%"
 //           left="50%"
-//           transform="translate(-50%, -50%)"
+//           transform="translate(-50%,-50%)"
 //           pointerEvents="none"
 //         >
 //           <Box
-//             border="4px solid rgba(255, 255, 255, 0.2)"
+//             border="4px solid rgba(255,255,255,0.2)"
 //             borderTop="4px solid white"
 //             borderRadius="50%"
 //             width="60px"
@@ -436,39 +356,37 @@
 //         </Box>
 //       )}
 
-//       {/* Center Play/Pause Button */}
-//       {!isPlaying && showControls && !isBuffering && (
+//       {!isPlaying && !isBuffering && (
 //         <Box
 //           position="absolute"
 //           top="50%"
 //           left="50%"
-//           transform="translate(-50%, -50%)"
+//           transform="translate(-50%,-50%)"
 //           onClick={handlePlayPause}
 //           cursor="pointer"
-//           bg="rgba(0, 0, 0, 0.6)"
+//           bg="rgba(0,0,0,0.6)"
 //           borderRadius="full"
 //           p={8}
-//           transition="all 0.3s ease"
-//           border="3px solid rgba(255, 255, 255, 0.3)"
+//           border="3px solid rgba(255,255,255,0.3)"
 //           _hover={{
-//             bg: "rgba(0, 0, 0, 0.8)",
-//             transform: "translate(-50%, -50%) scale(1.1)",
-//             borderColor: "white",
+//             bg: "rgba(0,0,0,0.8)",
+//             transform: "translate(-50%,-50%) scale(1.1)",
 //           }}
+//           transition="all 0.3s"
 //         >
 //           <Box as={FaPlay} color="white" fontSize="5xl" ml={2} />
 //         </Box>
 //       )}
 
-//       {/* Top Bar - Quality & Settings */}
+//       {/* Top bar */}
 //       <Box
 //         position="absolute"
 //         top="0"
 //         width="100%"
 //         opacity={showControls ? 1 : 0}
-//         transition="opacity 0.3s ease"
+//         transition="opacity 0.3s"
 //         pointerEvents={showControls ? "auto" : "none"}
-//         background="linear-gradient(to bottom, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 70%, transparent 100%)"
+//         background="linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%)"
 //         p={4}
 //       >
 //         <HStack justifyContent="space-between">
@@ -496,7 +414,6 @@
 //               </Badge>
 //             )}
 //           </HStack>
-
 //           <HStack spacing={2}>
 //             <Badge
 //               colorScheme="purple"
@@ -505,10 +422,8 @@
 //               py={1}
 //               borderRadius="md"
 //             >
-//               {videoQuality}
+//               {selectedQuality.label}
 //             </Badge>
-
-//             {/* More Options Menu */}
 //             <Menu>
 //               <MenuButton
 //                 as={IconButton}
@@ -517,7 +432,7 @@
 //                 colorScheme="whiteAlpha"
 //                 color="white"
 //                 size="sm"
-//                 _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
+//                 _hover={{ bg: "rgba(255,255,255,0.2)" }}
 //               />
 //               <MenuList bg="gray.900" borderColor="gray.700">
 //                 <MenuItem
@@ -526,7 +441,7 @@
 //                   _hover={{ bg: "gray.800" }}
 //                   color="white"
 //                 >
-//                   Download Video
+//                   Download
 //                 </MenuItem>
 //                 <MenuItem
 //                   icon={<FaShareAlt />}
@@ -544,32 +459,24 @@
 //                 >
 //                   Picture in Picture
 //                 </MenuItem>
-//                 <MenuItem
-//                   icon={<FaTh />}
-//                   _hover={{ bg: "gray.800" }}
-//                   color="white"
-//                 >
-//                   Watch in Theatre Mode
-//                 </MenuItem>
 //               </MenuList>
 //             </Menu>
 //           </HStack>
 //         </HStack>
 //       </Box>
 
-//       {/* Controls Container */}
+//       {/* Bottom controls */}
 //       <Box
 //         position="absolute"
 //         bottom="0"
 //         width="100%"
 //         opacity={showControls ? 1 : 0}
-//         transition="opacity 0.3s ease"
+//         transition="opacity 0.3s"
 //         pointerEvents={showControls ? "auto" : "none"}
-//         background="linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 70%, transparent 100%)"
+//         background="linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 100%)"
 //         pb={4}
 //         pt={12}
 //       >
-//         {/* Progress Bar */}
 //         <Box px={6} mb={3}>
 //           <Slider
 //             aria-label="Progress"
@@ -580,93 +487,79 @@
 //             step={0.1}
 //             focusThumbOnChange={false}
 //           >
-//             <SliderTrack bg="rgba(255, 255, 255, 0.2)" height="5px">
+//             <SliderTrack bg="rgba(255,255,255,0.2)" height="5px">
 //               <SliderFilledTrack bg="red.500" />
 //             </SliderTrack>
-//             <SliderThumb
-//               boxSize="16px"
-//               bg="red.500"
-//               _focus={{ boxShadow: "0 0 0 4px rgba(239, 68, 68, 0.6)" }}
-//               transition="all 0.2s"
-//             />
+//             <SliderThumb boxSize="16px" bg="red.500" />
 //           </Slider>
 //         </Box>
 
-//         {/* Control Buttons */}
 //         <HStack
 //           spacing={{ base: 2, md: 4 }}
 //           justifyContent="space-between"
 //           alignItems="center"
 //           px={6}
 //         >
-//           {/* Left Controls */}
 //           <HStack spacing={{ base: 2, md: 3 }}>
 //             <Tooltip label={isPlaying ? "Pause (K)" : "Play (K)"} fontSize="xs">
 //               <IconButton
 //                 icon={isPlaying ? <FaPause /> : <FaPlay />}
-//                 aria-label={isPlaying ? "Pause" : "Play"}
+//                 aria-label="Play/Pause"
 //                 onClick={handlePlayPause}
 //                 variant="ghost"
 //                 colorScheme="whiteAlpha"
 //                 color="white"
 //                 size={{ base: "sm", md: "md" }}
-//                 _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
-//                 transition="all 0.2s"
+//                 _hover={{ bg: "rgba(255,255,255,0.2)" }}
 //               />
 //             </Tooltip>
-
-//             <Tooltip label="Rewind 10s (J)" fontSize="xs">
+//             <Tooltip label="Rewind 10s" fontSize="xs">
 //               <IconButton
 //                 icon={<FaBackward />}
-//                 aria-label="Rewind 10s"
-//                 onClick={handleSkipBackward}
+//                 aria-label="Rewind"
+//                 onClick={() =>
+//                   videoRef.current && (videoRef.current.currentTime -= 10)
+//                 }
 //                 variant="ghost"
 //                 colorScheme="whiteAlpha"
 //                 color="white"
 //                 size={{ base: "sm", md: "md" }}
-//                 _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
-//                 transition="all 0.2s"
+//                 _hover={{ bg: "rgba(255,255,255,0.2)" }}
 //               />
 //             </Tooltip>
-
-//             <Tooltip label="Forward 10s (L)" fontSize="xs">
+//             <Tooltip label="Forward 10s" fontSize="xs">
 //               <IconButton
 //                 icon={<FaForward />}
-//                 aria-label="Forward 10s"
-//                 onClick={handleSkipForward}
+//                 aria-label="Forward"
+//                 onClick={() =>
+//                   videoRef.current && (videoRef.current.currentTime += 10)
+//                 }
 //                 variant="ghost"
 //                 colorScheme="whiteAlpha"
 //                 color="white"
 //                 size={{ base: "sm", md: "md" }}
-//                 _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
-//                 transition="all 0.2s"
+//                 _hover={{ bg: "rgba(255,255,255,0.2)" }}
 //               />
 //             </Tooltip>
-
-//             {/* Volume Control */}
 //             <HStack
 //               spacing={2}
 //               display={{ base: "none", md: "flex" }}
-//               bg="rgba(255, 255, 255, 0.1)"
+//               bg="rgba(255,255,255,0.1)"
 //               px={3}
 //               py={1}
 //               borderRadius="full"
-//               _hover={{ bg: "rgba(255, 255, 255, 0.15)" }}
-//               transition="all 0.2s"
 //             >
-//               <Tooltip label="Mute (M)" fontSize="xs">
-//                 <IconButton
-//                   icon={getVolumeIcon()}
-//                   aria-label="Volume"
-//                   onClick={handleVolumeMuteToggle}
-//                   variant="ghost"
-//                   colorScheme="whiteAlpha"
-//                   color="white"
-//                   size="sm"
-//                   minW="auto"
-//                   _hover={{ bg: "transparent" }}
-//                 />
-//               </Tooltip>
+//               <IconButton
+//                 icon={getVolumeIcon()}
+//                 aria-label="Mute"
+//                 onClick={handleVolumeMuteToggle}
+//                 variant="ghost"
+//                 colorScheme="whiteAlpha"
+//                 color="white"
+//                 size="sm"
+//                 minW="auto"
+//                 _hover={{ bg: "transparent" }}
+//               />
 //               <Slider
 //                 aria-label="Volume"
 //                 value={volume}
@@ -677,14 +570,12 @@
 //                 width="90px"
 //                 focusThumbOnChange={false}
 //               >
-//                 <SliderTrack bg="rgba(255, 255, 255, 0.3)" height="3px">
+//                 <SliderTrack bg="rgba(255,255,255,0.3)" height="3px">
 //                   <SliderFilledTrack bg="white" />
 //                 </SliderTrack>
 //                 <SliderThumb boxSize="12px" bg="white" />
 //               </Slider>
 //             </HStack>
-
-//             {/* Time Display */}
 //             <Text
 //               color="white"
 //               fontSize={{ base: "xs", md: "sm" }}
@@ -695,27 +586,25 @@
 //             </Text>
 //           </HStack>
 
-//           {/* Right Controls */}
 //           <HStack spacing={{ base: 1, md: 2 }}>
-//             {/* Captions Toggle */}
-//             <Tooltip label="Captions (C)" fontSize="xs">
+//             <Tooltip label="Captions" fontSize="xs">
 //               <IconButton
 //                 icon={<FaClosedCaptioning />}
 //                 aria-label="Captions"
-//                 onClick={toggleCaptions}
+//                 onClick={() => {
+//                   setShowCaptions(!showCaptions);
+//                   showToast(showCaptions ? "Captions OFF" : "Captions ON");
+//                 }}
 //                 variant="ghost"
 //                 colorScheme="whiteAlpha"
 //                 color={showCaptions ? "red.400" : "white"}
 //                 size={{ base: "sm", md: "md" }}
 //                 display={{ base: "none", md: "flex" }}
-//                 _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
-//                 transition="all 0.2s"
+//                 _hover={{ bg: "rgba(255,255,255,0.2)" }}
 //               />
 //             </Tooltip>
-
-//             {/* Playback Speed Menu */}
 //             <Menu>
-//               <Tooltip label="Playback Speed" fontSize="xs">
+//               <Tooltip label="Speed" fontSize="xs">
 //                 <MenuButton
 //                   as={IconButton}
 //                   icon={<MdSpeed />}
@@ -723,21 +612,21 @@
 //                   colorScheme="whiteAlpha"
 //                   color="white"
 //                   size={{ base: "sm", md: "md" }}
-//                   _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
+//                   _hover={{ bg: "rgba(255,255,255,0.2)" }}
 //                 />
 //               </Tooltip>
 //               <MenuList bg="gray.900" borderColor="gray.700" minW="120px">
-//                 {speedOptions.map((speed) => (
+//                 {speedOptions.map((s) => (
 //                   <MenuItem
-//                     key={speed}
-//                     onClick={() => handleSpeedChange(speed)}
-//                     bg={playbackSpeed === speed ? "gray.800" : "transparent"}
+//                     key={s}
+//                     onClick={() => handleSpeedChange(s)}
+//                     bg={playbackSpeed === s ? "gray.800" : "transparent"}
 //                     _hover={{ bg: "gray.800" }}
 //                     color="white"
 //                     justifyContent="space-between"
 //                   >
-//                     <Text>{speed}x</Text>
-//                     {speed === 1 && (
+//                     <Text>{s}x</Text>
+//                     {s === 1 && (
 //                       <Badge colorScheme="gray" ml={2} fontSize="xs">
 //                         Normal
 //                       </Badge>
@@ -746,10 +635,8 @@
 //                 ))}
 //               </MenuList>
 //             </Menu>
-
-//             {/* Quality Menu */}
 //             <Menu>
-//               <Tooltip label="Quality Settings" fontSize="xs">
+//               <Tooltip label="Quality" fontSize="xs">
 //                 <MenuButton
 //                   as={IconButton}
 //                   icon={<MdHighQuality />}
@@ -757,21 +644,25 @@
 //                   colorScheme="whiteAlpha"
 //                   color="white"
 //                   size={{ base: "sm", md: "md" }}
-//                   _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
+//                   _hover={{ bg: "rgba(255,255,255,0.2)" }}
 //                 />
 //               </Tooltip>
 //               <MenuList bg="gray.900" borderColor="gray.700" minW="140px">
-//                 {qualityOptions.map((quality) => (
+//                 {qualityOptions.map((opt) => (
 //                   <MenuItem
-//                     key={quality}
-//                     onClick={() => handleQualityChange(quality)}
-//                     bg={videoQuality === quality ? "gray.800" : "transparent"}
+//                     key={opt.label}
+//                     onClick={() => handleQualityChange(opt)}
+//                     bg={
+//                       selectedQuality.label === opt.label
+//                         ? "gray.800"
+//                         : "transparent"
+//                     }
 //                     _hover={{ bg: "gray.800" }}
 //                     color="white"
 //                     justifyContent="space-between"
 //                   >
-//                     <Text>{quality}</Text>
-//                     {quality === "Auto" && (
+//                     <Text>{opt.label}</Text>
+//                     {opt.label === "Auto" && (
 //                       <Badge colorScheme="purple" ml={2} fontSize="xs">
 //                         HD
 //                       </Badge>
@@ -780,8 +671,6 @@
 //                 ))}
 //               </MenuList>
 //             </Menu>
-
-//             {/* Mobile Volume */}
 //             <IconButton
 //               icon={getVolumeIcon()}
 //               aria-label="Volume"
@@ -791,11 +680,8 @@
 //               color="white"
 //               size={{ base: "sm", md: "md" }}
 //               display={{ base: "flex", md: "none" }}
-//               _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
-//               transition="all 0.2s"
+//               _hover={{ bg: "rgba(255,255,255,0.2)" }}
 //             />
-
-//             {/* Settings */}
 //             <Menu>
 //               <Tooltip label="Settings" fontSize="xs">
 //                 <MenuButton
@@ -806,7 +692,7 @@
 //                   color="white"
 //                   size={{ base: "sm", md: "md" }}
 //                   display={{ base: "none", md: "flex" }}
-//                   _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
+//                   _hover={{ bg: "rgba(255,255,255,0.2)" }}
 //                 />
 //               </Tooltip>
 //               <MenuList bg="gray.900" borderColor="gray.700">
@@ -818,90 +704,39 @@
 //                   <Text>Autoplay</Text>
 //                   <Badge colorScheme="green">ON</Badge>
 //                 </MenuItem>
-//                 <MenuItem
-//                   _hover={{ bg: "gray.800" }}
-//                   color="white"
-//                   justifyContent="space-between"
-//                 >
-//                   <Text>Annotations</Text>
-//                   <Badge colorScheme="gray">OFF</Badge>
-//                 </MenuItem>
-//                 <MenuItem _hover={{ bg: "gray.800" }} color="white">
-//                   Keyboard Shortcuts
-//                 </MenuItem>
-//                 <MenuItem _hover={{ bg: "gray.800" }} color="white">
-//                   Stats for Nerds
-//                 </MenuItem>
 //               </MenuList>
 //             </Menu>
-
-//             {/* Fullscreen */}
 //             <Tooltip label="Fullscreen (F)" fontSize="xs">
 //               <IconButton
 //                 icon={isFullScreen ? <FaCompress /> : <FaExpand />}
-//                 aria-label={isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
+//                 aria-label="Fullscreen"
 //                 onClick={handleFullScreenToggle}
 //                 variant="ghost"
 //                 colorScheme="whiteAlpha"
 //                 color="white"
 //                 size={{ base: "sm", md: "md" }}
-//                 _hover={{ bg: "rgba(255, 255, 255, 0.2)" }}
-//                 transition="all 0.2s"
+//                 _hover={{ bg: "rgba(255,255,255,0.2)" }}
 //               />
 //             </Tooltip>
 //           </HStack>
 //         </HStack>
 //       </Box>
 
-//       {/* Keyboard Shortcuts Overlay */}
-//       {showControls && (
-//         <Box
-//           position="absolute"
-//           bottom="80px"
-//           right="20px"
-//           bg="rgba(0, 0, 0, 0.8)"
-//           px={3}
-//           py={2}
-//           borderRadius="md"
-//           display={{ base: "none", lg: "block" }}
-//           opacity={0.5}
-//           _hover={{ opacity: 1 }}
-//           transition="opacity 0.2s"
-//         >
-//           <VStack spacing={0} align="start">
-//             <Text color="white" fontSize="xs" fontWeight="bold" mb={1}>
-//               Shortcuts
-//             </Text>
-//             <Text color="gray.400" fontSize="xs">
-//               Space/K: Play/Pause
-//             </Text>
-//             <Text color="gray.400" fontSize="xs">
-//               F: Fullscreen
-//             </Text>
-//             <Text color="gray.400" fontSize="xs">
-//               M: Mute
-//             </Text>
-//             <Text color="gray.400" fontSize="xs">
-//               ←/→: -10s/+10s
-//             </Text>
-//           </VStack>
-//         </Box>
-//       )}
-
-//       {/* CSS Animation for Spinner */}
-//       <style>
-//         {`
-//           @keyframes spin {
-//             0% { transform: rotate(0deg); }
-//             100% { transform: rotate(360deg); }
-//           }
-//         `}
-//       </style>
+//       <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
 //     </Box>
 //   );
 // };
 
 // export default VideoPlayerDisplay;
+
+
+
+
+
+
+
+
+
 
 import {
   Box,

@@ -48,7 +48,7 @@ function App() {
       </Flex> */}
 
       {/* Add this line at the end */}
-      <VoiceCommandControl />
+      {/* <VoiceCommandControl /> */}
     </ChakraProvider>
   );
 }
