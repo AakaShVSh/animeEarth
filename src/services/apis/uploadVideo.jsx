@@ -145,9 +145,10 @@
 import axios from "axios";
 
 const getBaseUrl = () => {
-  // if (window.location.hostname === "localhost") 
+  if (window.location.hostname === "localhost") 
     return "http://localhost:80";
-  // return "https://animetubebackend.onrender.com";
+  
+  return "https://animetubebackend.onrender.com";
 };
 
 const api = axios.create({ baseURL: getBaseUrl(), withCredentials: true });
