@@ -150,7 +150,7 @@ export const SignoutApi = async () => {
 };
 
 export const isAuthenticated = () => {
-  return Cookies.get("isLoggedIn") === "true";
+  return Cookies.get("isLoggedIn") === true;
 };
 
 // ─── checkAuthApi: returns full user profile from /me endpoint ───────────────
