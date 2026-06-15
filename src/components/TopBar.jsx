@@ -257,6 +257,8 @@ function TopBar() {
 
   // ── Fetch real user data when logged in ───────────────────────────────
   useEffect(() => {
+    console.log(loggedIn);
+    
     if (loggedIn) {
       checkAuthApi().then(({ authenticated, user }) => {
         if (authenticated && user) setCurrentUser(user);
