@@ -144,14 +144,14 @@ export const SignoutApi = async () => {
   try {
     await axiosInstance.post("/signout");
   } catch (error) {
-    Cookies.remove("isLoggedIn");
+   
     console.log(error);
   }
 };
 
-export const isAuthenticated = () => {
-  return Cookies.get("isLoggedIn") === "true";
-};
+// export const isAuthenticated = () => {
+//   return Cookies.get("isLoggedIn") === "true";
+// };
 
 // ─── checkAuthApi: returns full user profile from /me endpoint ───────────────
 // The /me endpoint MUST return these fields for the UI to work correctly:

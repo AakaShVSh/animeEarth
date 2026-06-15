@@ -212,7 +212,6 @@
 // }
 
 // export default TopBar;
-
 import React, { useEffect, useState, useCallback } from "react";
 import {
   Flex,
@@ -223,14 +222,12 @@ import {
   InputGroup,
   InputLeftElement,
   Avatar,
-  AvatarBadge,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
   MenuDivider,
   IconButton,
-  useMediaQuery,
   Text,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
@@ -243,43 +240,29 @@ import {
   FiLogOut,
 } from "react-icons/fi";
 import Portal from "./helper/Portal";
-import {
-  SignoutApi,
-  isAuthenticated,
-  checkAuthApi,
-} from "../services/apis/userAuth";
+import { SignoutApi, checkAuthApi } from "../services/apis/userAuth";
 
 function TopBar() {
-  const [loggedIn, setLoggedIn] = useState(() => isAuthenticated());
+  const [loggedIn, setLoggedIn] = useState(null); // null = still checking
   const [currentUser, setCurrentUser] = useState(null);
-  const [isMobile] = useMediaQuery("(max-width: 768px)");
   const navigate = useNavigate();
 
-  // ── Fetch real user data when logged in ───────────────────────────────
-  useEffect(() => {
-    console.log(loggedIn);
-    
-    if (loggedIn) {
-      checkAuthApi().then(({ authenticated, user }) => {
-        if (authenticated && user) setCurrentUser(user);
-        else {
-          setCurrentUser(null);
-          setLoggedIn(false);
-        }
-      });
-    } else {
-      setCurrentUser(null);
-    }
-  }, [loggedIn]);
+  const checkAuth = useCallback(async () => {
+    const { authenticated, user } = await checkAuthApi();
+    setLoggedIn(authenticated);
+    setCurrentUser(authenticated ? user : null);
+  }, []);
 
-  // ── Poll cookie for auth state changes (login/logout in other tab) ────
+  // Initial auth check
   useEffect(() => {
-    const id = setInterval(() => {
-      const current = isAuthenticated();
-      if (current !== loggedIn) setLoggedIn(current);
-    }, 1000);
+    checkAuth();
+  }, [checkAuth]);
+
+  // Poll /me every 5 seconds to detect logout/session expiry
+  useEffect(() => {
+    const id = setInterval(checkAuth, 5000);
     return () => clearInterval(id);
-  }, [loggedIn]);
+  }, [checkAuth]);
 
   const handleSignout = useCallback(async () => {
     await SignoutApi();
@@ -288,20 +271,11 @@ function TopBar() {
     navigate("/");
   }, [navigate]);
 
-  // ── Avatar display logic ───────────────────────────────────────────────
-  // Priority: profilePicture (Google OAuth or uploaded) → first letter of email → first letter of username
+  // Still checking auth — render nothing to avoid flicker
+  if (loggedIn === null) return null;
+
   const avatarSrc = currentUser?.profilePicture || null;
-
-  // Name used by Chakra Avatar for generating fallback initials
-  // Use email first (so "john@gmail.com" → "J"), then username, then "U"
   const avatarName = currentUser?.email || currentUser?.username || "User";
-
-  // Single uppercase letter shown when no image — first char of email or username
-  const fallbackLetter = (
-    currentUser?.email?.[0] ||
-    currentUser?.username?.[0] ||
-    "U"
-  ).toUpperCase();
 
   const TopBarContent = (
     <Box>
@@ -400,7 +374,6 @@ function TopBar() {
                   transition="opacity 0.2s"
                 >
                   {avatarSrc ? (
-                    // Has a real profile picture (Google OAuth or uploaded)
                     <Avatar
                       size={{ base: "sm", md: "sm" }}
                       src={avatarSrc}
@@ -409,7 +382,6 @@ function TopBar() {
                       borderColor="blue.400"
                     />
                   ) : (
-                    // No picture — show colored circle with first letter
                     <Avatar
                       size={{ base: "sm", md: "sm" }}
                       name={avatarName}
@@ -418,10 +390,7 @@ function TopBar() {
                       fontWeight="bold"
                       border="2px solid"
                       borderColor="blue.400"
-                    >
-                      {/* Chakra's Avatar auto-generates initials from `name`,
-                          but we override to guarantee single uppercase letter */}
-                    </Avatar>
+                    />
                   )}
                 </MenuButton>
 
