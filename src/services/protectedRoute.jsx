@@ -1,9 +1,9 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { isAuthenticated } from "./apis/userAuth"; // reads isLoggedIn cookie
+import { checkAuthApi, isAuthenticated } from "./apis/userAuth"; // reads isLoggedIn cookie
 
 const ProtectedRoute = ({ children }) => {
-  if (!isAuthenticated()) {
+  if (!checkAuthApi().authenticated) {
     return <Navigate to="/SignIn" replace />;
   }
   return children;
