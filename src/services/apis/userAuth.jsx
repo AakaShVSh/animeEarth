@@ -150,6 +150,8 @@ export const SignoutApi = async () => {
 };
 
 export const isAuthenticated = () => {
+  console.log(Cookies.get("isLoggedIn"));
+  
   return Cookies.get("isLoggedIn") === true;
 };
 
