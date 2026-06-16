@@ -556,6 +556,7 @@ import {
   MenuDivider,
   IconButton,
   Text,
+  Skeleton,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -570,14 +571,16 @@ import Portal from "./helper/Portal";
 import { SignoutApi, checkAuthApi } from "../services/apis/userAuth";
 
 function TopBar() {
-  const [loggedIn, setLoggedIn] = useState(null); // null = still checking
+  const [loggedIn, setLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const navigate = useNavigate();
 
   const checkAuth = useCallback(async () => {
     const { authenticated, user } = await checkAuthApi();
     setLoggedIn(authenticated);
     setCurrentUser(authenticated ? user : null);
+    setAuthChecked(true);
   }, []);
 
   // Initial check on mount
@@ -597,9 +600,6 @@ function TopBar() {
     setCurrentUser(null);
     navigate("/");
   }, [navigate]);
-
-  // Don't render anything until we know auth state
-  if (loggedIn === null) return null;
 
   const avatarSrc = currentUser?.profilePicture || null;
   const avatarName = currentUser?.email || currentUser?.username || "User";
@@ -663,7 +663,13 @@ function TopBar() {
 
           {/* Right section */}
           <HStack spacing={{ base: "2", md: "4" }} ml="4">
-            {loggedIn ? (
+            {!authChecked ? (
+              // Skeleton placeholder while /me is loading
+              <HStack spacing="2">
+                <Skeleton height="32px" width="70px" borderRadius="full" />
+                <Skeleton height="32px" width="70px" borderRadius="full" />
+              </HStack>
+            ) : loggedIn ? (
               <>
                 <Link to="/Upload">
                   <IconButton
