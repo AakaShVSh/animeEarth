@@ -570,8 +570,24 @@ import {
 import Portal from "./helper/Portal";
 import { SignoutApi, checkAuthApi } from "../services/apis/userAuth";
 
+// Read last known auth state instantly from sessionStorage — no flicker
+const getCachedAuth = () => {
+  try {
+    return sessionStorage.getItem("authState") === "true";
+  } catch {
+    return false;
+  }
+};
+
+const setCachedAuth = (val) => {
+  try {
+    sessionStorage.setItem("authState", val ? "true" : "false");
+  } catch {}
+};
+
 function TopBar() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  // Start with cached value — renders correctly on first paint
+  const [loggedIn, setLoggedIn] = useState(getCachedAuth);
   const [currentUser, setCurrentUser] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
   const navigate = useNavigate();
@@ -579,16 +595,16 @@ function TopBar() {
   const checkAuth = useCallback(async () => {
     const { authenticated, user } = await checkAuthApi();
     setLoggedIn(authenticated);
+    setCachedAuth(authenticated);
     setCurrentUser(authenticated ? user : null);
     setAuthChecked(true);
   }, []);
 
-  // Initial check on mount
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-  // Poll /me every 5s to detect session expiry or logout in another tab
+  // Poll every 5s
   useEffect(() => {
     const id = setInterval(checkAuth, 5000);
     return () => clearInterval(id);
@@ -597,6 +613,7 @@ function TopBar() {
   const handleSignout = useCallback(async () => {
     await SignoutApi();
     setLoggedIn(false);
+    setCachedAuth(false);
     setCurrentUser(null);
     navigate("/");
   }, [navigate]);
@@ -663,8 +680,13 @@ function TopBar() {
 
           {/* Right section */}
           <HStack spacing={{ base: "2", md: "4" }} ml="4">
-            {!authChecked ? (
-              // Skeleton placeholder while /me is loading
+            {/* 
+              While /me is in flight we use cached loggedIn value to show
+              the correct UI shape instantly. Only show skeletons on very
+              first ever visit (no cache yet) 
+            */}
+            {!authChecked && !getCachedAuth() ? (
+              // First ever visit — no cache, show skeletons
               <HStack spacing="2">
                 <Skeleton height="32px" width="70px" borderRadius="full" />
                 <Skeleton height="32px" width="70px" borderRadius="full" />
